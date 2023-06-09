@@ -69,4 +69,26 @@ class MemberRepositoryTest {
 
     }
 
+    @Test
+//    @Rollback(value = false)
+    public void findKakaoMemberByEmail(){
+        Member memberA=new Member("hb912","memberA","12344456","ab@ab.com","010-5031-8478", USER.toString(),"kakao");
+        Member memberB=new Member("hb915","memberB","123444577","ab@abb.com","010-4444-8478", USER.toString(),null);
+
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        Optional<Member> findMemberA = memberRepository.findKakaoUserByEmail(memberA.getEmail());
+        Optional<Member> findMemberB = memberRepository.findKakaoUserByEmail(memberB.getEmail());
+
+        assertThat(findMemberA.isPresent()).isTrue();
+        if(findMemberA.isPresent()) {
+            assertThat(findMemberA.get()).isEqualTo(memberA);
+        }
+        assertThat(findMemberB.isEmpty()).isTrue();
+        if(findMemberB.isPresent()) {
+            assertThat(findMemberB.get()).isEqualTo(memberB);
+        }
+    }
+
 }
