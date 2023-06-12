@@ -33,16 +33,16 @@ class MemberRepositoryTest {
 
     @BeforeEach
     public void before(){
-        Optional<Member> hb912 = memberRepository.findOneByUserId("hb912");
-        Optional<Member> hb915 = memberRepository.findOneByUserId("hb915");
+        Optional<Member> memberA = memberRepository.findOneByNameAndEmail("memberA","ab@ab.com");
+        Optional<Member> memberB = memberRepository.findOneByNameAndEmail("memberA","ab@abb.com");
 
-        if(hb912.isPresent()){
-            memberRepository.deleteByUserId(hb912.get().getUserId());
-            System.out.println("hb912 삭제");
+        if(memberA.isPresent()){
+            memberRepository.deleteById(memberA.get().getId());
+            System.out.println("memberA 삭제");
         }
-        if(hb915.isPresent()){
-            memberRepository.deleteByUserId(hb915.get().getUserId());
-            System.out.println("hb915 삭제");
+        if(memberB.isPresent()){
+            memberRepository.deleteById(memberB.get().getId());
+            System.out.println("memberB 삭제");
         }
         em.flush();     //*주의 save의 우선순위가 더 높기 때문에 flush를 사용하지 않으면 delete가 반영되지 않는다.
     }
@@ -53,14 +53,14 @@ class MemberRepositoryTest {
     @Test
     @Rollback(value = false)
     public void saveAndSelectById(){
-        Member memberA=new Member("hb912","memberA","12344456","ab@ab.com","010-5031-8478");
-        Member memberB=new Member("hb915","memberB","123444577","ab@abb.com","010-4444-8478");
+        Member memberA=new Member("ab@ab.com","memberA","12344456","010-5031-8478");
+        Member memberB=new Member("ab@abb.com","memberB","123444577","010-4444-8478");
 
         memberRepository.save(memberA);
         memberRepository.save(memberB);
 
-        Optional<Member> findMemberA = memberRepository.findOneByUserId(memberA.getUserId());
-        Optional<Member> findMemberB = memberRepository.findOneByUserId(memberB.getUserId());
+        Optional<Member> findMemberA = memberRepository.findOneByNameAndEmail(memberA.getName(),memberA.getEmail());
+        Optional<Member> findMemberB = memberRepository.findOneByNameAndEmail(memberB.getName(),memberB.getEmail());
 
         assertThat(findMemberA.isPresent()).isTrue();
         assertThat(findMemberA.get()).isEqualTo(memberA);
@@ -72,8 +72,8 @@ class MemberRepositoryTest {
     @Test
 //    @Rollback(value = false)
     public void findKakaoMemberByEmail(){
-        Member memberA=new Member("hb912","memberA","12344456","ab@ab.com","010-5031-8478", USER.toString(),"kakao");
-        Member memberB=new Member("hb915","memberB","123444577","ab@abb.com","010-4444-8478", USER.toString(),null);
+        Member memberA=new Member("ab@ab.com","memberA","12344456","010-5031-8478", USER.toString(),"kakao");
+        Member memberB=new Member("ab@abb.com","memberB","123444577","010-4444-8478", USER.toString(),null);
 
         memberRepository.save(memberA);
         memberRepository.save(memberB);

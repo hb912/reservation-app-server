@@ -16,12 +16,10 @@ public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique=true, nullable = false)
-    private String userId;
+    private String email;
     private String name;
     private String password;
-    private String email;
     private String phoneNumber;
     private String role;
     private String provider;
@@ -31,21 +29,19 @@ public class Member extends BaseTimeEntity {
 //    @OneToMany(mappedBy="booking", fetch= FetchType.LAZY)
 //    private List<Booking> bookings=new ArrayList<>();
 
-    public Member(String userId, String name, String password, String email, String phoneNumber) {
-        this.userId=userId;
+    public Member(String email,String name, String password,  String phoneNumber) {
+        this.email = email;
         this.name = name;
         this.password = password;
-        this.email = email;
         this.phoneNumber = phoneNumber;
         this.role=String.valueOf(Role.USER);
     }
 
-    public Member(String userId,String name, String password, String email, String phoneNumber, String role,
+    public Member(String email, String name, String password, String phoneNumber, String role,
                   String provider) {
-        this.userId=userId;
+        this.email = email;
         this.name = name;
         this.password = password;
-        this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.provider = provider;
