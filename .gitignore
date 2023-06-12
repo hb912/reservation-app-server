@@ -36,4 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-## application-security.properties
+## application-security.properties ##
+application-security.properties
