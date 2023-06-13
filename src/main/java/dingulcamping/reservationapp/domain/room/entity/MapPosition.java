@@ -1,13 +1,16 @@
 package dingulcamping.reservationapp.domain.room.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
 @Embeddable
 @Getter
-@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class MapPosition {
-    private int top;
-    private int right;
+    @Column(name="top")
+    private double top;
+    @Column(name="\"right\"")
+    private double right;
 }
