@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 
+import static dingulcamping.reservationapp.domain.member.entity.Role.USER;
+
 @Entity
 @Getter
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
@@ -16,12 +18,15 @@ public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique=true, nullable = false)
     private String email;
     private String name;
     private String password;
     private String phoneNumber;
-    private String role;
+
+    @Enumerated(value=EnumType.STRING)
+    private Role role;
     private String provider;
     private String refreshToken;
 
@@ -34,10 +39,10 @@ public class Member extends BaseTimeEntity {
         this.name = name;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.role=String.valueOf(Role.USER);
+        this.role= USER;
     }
 
-    public Member(String email, String name, String password, String phoneNumber, String role,
+    public Member(String email, String name, String password, String phoneNumber, Role role,
                   String provider) {
         this.email = email;
         this.name = name;

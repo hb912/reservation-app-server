@@ -72,8 +72,8 @@ class MemberRepositoryTest {
     @Test
 //    @Rollback(value = false)
     public void findKakaoMemberByEmail(){
-        Member memberA=new Member("ab@ab.com","memberA","12344456","010-5031-8478", USER.toString(),"kakao");
-        Member memberB=new Member("ab@abb.com","memberB","123444577","010-4444-8478", USER.toString(),null);
+        Member memberA=new Member("ab@ab.com","memberA","12344456","010-5031-8478", USER,"kakao");
+        Member memberB=new Member("ab@abb.com","memberB","123444577","010-4444-8478", USER,null);
 
         memberRepository.save(memberA);
         memberRepository.save(memberB);
