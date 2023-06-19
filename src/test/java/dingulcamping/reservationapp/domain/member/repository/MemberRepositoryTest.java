@@ -51,7 +51,6 @@ class MemberRepositoryTest {
      * test save, findById
      */
     @Test
-    @Rollback(value = false)
     public void saveAndSelectById(){
         Member memberA=new Member("ab@ab.com","memberA","12344456","010-5031-8478");
         Member memberB=new Member("ab@abb.com","memberB","123444577","010-4444-8478");

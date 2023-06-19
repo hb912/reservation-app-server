@@ -1,12 +1,15 @@
 package dingulcamping.reservationapp.domain.member.entity;
 
+import dingulcamping.reservationapp.domain.booking.entity.Booking;
 import dingulcamping.reservationapp.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static dingulcamping.reservationapp.domain.member.entity.Role.USER;
 
@@ -30,9 +33,8 @@ public class Member extends BaseTimeEntity {
     private String provider;
     private String refreshToken;
 
-    //TODO
-//    @OneToMany(mappedBy="booking", fetch= FetchType.LAZY)
-//    private List<Booking> bookings=new ArrayList<>();
+    @OneToMany(mappedBy="member", fetch= FetchType.LAZY)
+    private List<Booking> bookings=new ArrayList<>();
 
     public Member(String email,String name, String password,  String phoneNumber) {
         this.email = email;
