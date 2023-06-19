@@ -59,12 +59,9 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
                 .fetch()
                 .stream()
                 .map(booking -> booking.getProcessDate())
-                .collect(Collectors.toList())
-                .stream()
                 .flatMap(List::stream)
                 .filter(date -> date.after(currentDate))
                 .collect(Collectors.toList());
-       
         return disableDates;
     }
 
