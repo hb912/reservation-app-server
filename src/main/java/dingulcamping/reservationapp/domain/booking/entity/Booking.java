@@ -2,6 +2,7 @@ package dingulcamping.reservationapp.domain.booking.entity;
 
 import com.querydsl.core.annotations.QueryEntity;
 import dingulcamping.reservationapp.domain.member.entity.Member;
+import dingulcamping.reservationapp.domain.review.entity.Review;
 import dingulcamping.reservationapp.domain.room.entity.Room;
 import dingulcamping.reservationapp.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -31,10 +32,10 @@ public class Booking extends BaseTimeEntity {
     @ElementCollection(fetch=FetchType.LAZY)
     private List<Date> processDate=new ArrayList<>();
     private int peopleNumber;
+    private String requirements;
 
     @Enumerated(value=EnumType.STRING)
     private BookingStatus status;
-    private Boolean isReviewed;
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="room_id")
@@ -44,24 +45,33 @@ public class Booking extends BaseTimeEntity {
     @JoinColumn(name="member_id")
     private Member member;
 
-    public Booking(int price, Date startDate, Date endDate, int peopleNumber, Room room, Member member) {
+    @OneToOne(mappedBy="booking", fetch= FetchType.LAZY)
+    private Review review;
+
+    public Booking(int price, Date startDate, Date endDate, int peopleNumber,String requirements, Room room,
+                   Member member
+                   ) {
         this.price = price;
         this.startDate = startDate;
         this.endDate = endDate;
         getProcessDate(startDate, endDate);
         this.peopleNumber = peopleNumber;
+        this.requirements=requirements;
         this.room = room;
         this.member = member;
         this.status=BookingStatus.BOOKING_REQ;
-        this.isReviewed=false;
+    }
+
+    public void createReview(Review review) {
+        this.review = review;
+    }
+
+    public void deleteReview(){
+        this.review=null;
     }
 
     public void changeBookingStatus(BookingStatus bookingStatus){
         this.status=bookingStatus;
-    }
-
-    public void changeReviewStatus(){
-        this.isReviewed=!this.isReviewed;
     }
 
     private void getProcessDate(Date startDate, Date endDate) {
