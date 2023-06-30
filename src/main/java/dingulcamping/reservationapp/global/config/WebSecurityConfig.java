@@ -24,6 +24,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig{
 
+    @Value("${jwt.secret}")
+    private String secretKey;
+    private final RefreshTokenService refreshTokenService;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -42,6 +45,9 @@ public class WebSecurityConfig{
                 .csrf(CsrfConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(config->config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //session 사용 안함
+                .addFilterBefore(new JwtFilter(secretKey,refreshTokenService),
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }

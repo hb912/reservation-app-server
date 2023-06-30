@@ -1,4 +1,4 @@
-package dingulcamping.reservationapp.global.entity.config;
+package dingulcamping.reservationapp.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
