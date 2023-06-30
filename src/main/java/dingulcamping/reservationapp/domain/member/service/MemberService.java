@@ -10,7 +10,7 @@ import dingulcamping.reservationapp.domain.member.exception.EmailAlreadyExistExc
 import dingulcamping.reservationapp.domain.member.exception.MemberIsNotExistException;
 import dingulcamping.reservationapp.domain.member.exception.PasswordNotMatchException;
 import dingulcamping.reservationapp.domain.member.repository.MemberRepository;
-import lombok.AllArgsConstructor;
+import dingulcamping.reservationapp.domain.member.repository.RefreshTokenRepository;
 import dingulcamping.reservationapp.global.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +28,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Value("${jwt.secret}")
     private String secretKey;
@@ -69,6 +70,10 @@ public class MemberService {
         TokenDto tokenDto = new TokenDto(accessToken, role);
 
         if(autoLogin){
+            String token = getRefreshToken(member.getId(), member.getRole());
+            RefreshToken refreshToken = new RefreshToken(token, member.getId());
+            refreshTokenRepository.save(refreshToken);
+            tokenDto.setRefreshToken(token);
         }
 
         return tokenDto;
@@ -78,5 +83,11 @@ public class MemberService {
         log.info("secretKey={}",secretKey);
         return JwtUtils.createJwt(memberId,role,secretKey,accessExp);
     }
+
+    public String getRefreshToken(Long memberId, Role role) {
+        log.info("secretKey={}",secretKey);
+        return JwtUtils.createJwt(memberId,role,secretKey,refreshExp);
+    }
+
 
 }

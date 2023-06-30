@@ -35,6 +35,10 @@ public class MemberController {
         log.info("accessToken={}",tokens.getAccessToken());
         String accessToken="Bearer "+tokens.getAccessToken();
         response.addHeader("authorization", accessToken);
+        if(!tokens.getRefreshToken().isEmpty()) {
+            Cookie cookie = new Cookie("refreshToken", tokens.getRefreshToken());
+            response.addCookie(cookie);
+        }
         return ResponseEntity.ok("로그인이 완료되었습니다.");
     }
 }
