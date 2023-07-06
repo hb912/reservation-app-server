@@ -55,10 +55,10 @@ class BookingRepositoryTest {
         Date endDate2=getDate(2023,7,24);
         Date startDate3 = getDate(2023,7,21);
         Date endDate3=getDate(2023,7,23);
-        Booking booking=new Booking(2000,startDate,endDate,3,room1,memberA);
-        Booking booking2=new Booking(2000,startDate2,endDate2,3,room2,memberA);
-        Booking booking3=new Booking(2000,startDate3,endDate3,3,room1,memberA);
-        Booking booking4=new Booking(2000,startDate,endDate,3,room2,memberA);
+        Booking booking=new Booking(2000,startDate,endDate,3,null,room1,memberA);
+        Booking booking2=new Booking(2000,startDate2,endDate2,3,null,room2,memberA);
+        Booking booking3=new Booking(2000,startDate3,endDate3,3,null,room1,memberA);
+        Booking booking4=new Booking(2000,startDate,endDate,3,null,room2,memberA);
         bookingRepository.save(booking);
         bookingRepository.save(booking2);
         bookingRepository.save(booking3);

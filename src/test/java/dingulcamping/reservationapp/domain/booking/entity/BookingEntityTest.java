@@ -42,7 +42,7 @@ class BookingEntityTest {
         em.flush();
         Date startDate = Date.valueOf("2023-04-18");
         Date endDate = Date.valueOf("2023-04-20");
-        Booking booking=new Booking(2000,startDate,endDate,3,room,findMember.get());
+        Booking booking=new Booking(2000,startDate,endDate,3,null,room,findMember.get());
         Assertions.assertThat(booking.getProcessDate())
                 .containsExactly(Date.valueOf("2023-04-18"),Date.valueOf("2023-04-19"));
     }
