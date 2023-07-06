@@ -41,4 +41,13 @@ public class MemberController {
         }
         return ResponseEntity.ok("로그인이 완료되었습니다.");
     }
+
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletResponse response){
+        Cookie cookie = new Cookie("refreshToken", "");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        response.addHeader("authorization","");
+        return ResponseEntity.ok("로그아웃이 완료되었습니다.");
+    }
 }

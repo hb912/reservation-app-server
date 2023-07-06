@@ -39,8 +39,9 @@ public class WebSecurityConfig{
                 .authorizeHttpRequests((authz)-> authz
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/register").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/**").permitAll())
                 .httpBasic(HttpBasicConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
                 .cors(Customizer.withDefaults())

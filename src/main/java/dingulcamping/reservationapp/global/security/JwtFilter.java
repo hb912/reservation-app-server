@@ -52,7 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if(JwtUtils.isExpired(token,secretKey)){
             log.error("Access Token이 만료되었습니다");
             String refreshToken = getRefreshToken(request);
-            if(refreshToken.isEmpty()){
+            if(refreshToken==null){
                 filterChain.doFilter(request,response);
                 return;
             }
