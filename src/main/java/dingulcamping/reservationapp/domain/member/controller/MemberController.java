@@ -4,11 +4,15 @@ import dingulcamping.reservationapp.domain.member.dto.LoginDto;
 import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
 import dingulcamping.reservationapp.domain.member.dto.TokenDto;
 import dingulcamping.reservationapp.domain.member.service.MemberService;
+import dingulcamping.reservationapp.global.security.JwtUtils;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterReqDto registerReqDto){
@@ -49,5 +55,14 @@ public class MemberController {
         response.addCookie(cookie);
         response.addHeader("authorization","");
         return ResponseEntity.ok("로그아웃이 완료되었습니다.");
+    }
+
+    @GetMapping("/confirmPW")
+    public ResponseEntity<Boolean> confirmPassword(@Valid String password, HttpServletRequest request){
+        final String authorization=request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token=authorization.split(" ")[1];
+        Long memberId= JwtUtils.getMemberId(token,secretKey);
+        Boolean isPasswordCorrect=memberService.verifyPassword(memberId, password);
+        return ResponseEntity.ok(isPasswordCorrect);
     }
 }

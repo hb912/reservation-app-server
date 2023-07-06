@@ -90,4 +90,9 @@ public class MemberService {
     }
 
 
+    public Boolean verifyPassword(Long memberId, String password) {
+        Optional<Member> findMember = memberRepository.findById(memberId);
+        Member member = findMember.get();
+        return bCryptPasswordEncoder.matches(password, member.getPassword());
+    }
 }
