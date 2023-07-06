@@ -1,6 +1,7 @@
 package dingulcamping.reservationapp.domain.member.entity;
 
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
+import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
 import dingulcamping.reservationapp.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -54,12 +55,28 @@ public class Member extends BaseTimeEntity {
         this.provider = provider;
     }
 
+    public Member(RegisterReqDto registerReq){
+        this.email=registerReq.getEmail();
+        this.name=registerReq.getName();
+        this.phoneNumber=registerReq.getPhoneNumber();
+        this.role= USER;
+        this.provider=null;
+    }
+
     public void changeRefreshToken(String refreshToken){
         this.refreshToken=refreshToken;
     }
 
     public void changePassword(String password){
         this.password=password;
+    }
+
+    public void setProvider(String provider){
+        this.provider=provider;
+    }
+
+    public void setEncryptedPassword(String encryptedPassword){
+        this.password=encryptedPassword;
     }
 
 }
