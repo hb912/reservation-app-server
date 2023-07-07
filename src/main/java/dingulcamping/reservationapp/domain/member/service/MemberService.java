@@ -5,12 +5,15 @@ import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
 import dingulcamping.reservationapp.domain.member.dto.TokenDto;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.member.entity.RefreshToken;
+import dingulcamping.reservationapp.domain.member.entity.ResetPwKey;
 import dingulcamping.reservationapp.domain.member.entity.Role;
 import dingulcamping.reservationapp.domain.member.exception.EmailAlreadyExistException;
 import dingulcamping.reservationapp.domain.member.exception.MemberIsNotExistException;
 import dingulcamping.reservationapp.domain.member.exception.PasswordNotMatchException;
+import dingulcamping.reservationapp.domain.member.exception.RedisPwKeySaveException;
 import dingulcamping.reservationapp.domain.member.repository.MemberRepository;
 import dingulcamping.reservationapp.domain.member.repository.RefreshTokenRepository;
+import dingulcamping.reservationapp.domain.member.repository.ResetPwKeyRepository;
 import dingulcamping.reservationapp.global.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ResetPwKeyRepository resetPwKeyRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Value("${jwt.secret}")
     private String secretKey;
@@ -53,12 +57,7 @@ public class MemberService {
         String password=loginDto.getPassword();
         Boolean autoLogin = loginDto.getAutoLogin();
 
-        Optional<Member> findMember = memberRepository.findOneByEmail(email);
-        if(findMember.isEmpty()){
-            throw new MemberIsNotExistException("해당 이메일은 가입내역이 없습니다. 다시 한번 확인해주세요");
-        }
-
-        Member member = findMember.get();
+        Member member = getMemberByEmail(email);
         boolean isPasswordCorrect = bCryptPasswordEncoder.matches(password, member.getPassword());
 
         if(!isPasswordCorrect){
@@ -94,5 +93,21 @@ public class MemberService {
         Optional<Member> findMember = memberRepository.findById(memberId);
         Member member = findMember.get();
         return bCryptPasswordEncoder.matches(password, member.getPassword());
+    }
+
+    public Member getMemberByEmail(String email) {
+        Optional<Member> findMember = memberRepository.findOneByEmail(email);
+        if(findMember.isEmpty()){
+            throw new MemberIsNotExistException("해당 이메일은 가입내역이 없습니다. 다시 한번 확인해주세요");
+        }
+        return findMember.get();
+    }
+
+    public void saveRedisKey(ResetPwKey resetPwKey){
+        try {
+            resetPwKeyRepository.save(resetPwKey);
+        }catch(Exception e){
+            throw new RedisPwKeySaveException("redis 저장에 실패했습니다.");
+        }
     }
 }
