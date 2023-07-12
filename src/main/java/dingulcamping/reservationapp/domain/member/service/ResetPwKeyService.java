@@ -33,4 +33,9 @@ public class ResetPwKeyService {
         }
         return findByRedisKey.get();
     }
+
+    @Transactional
+    public void deleteKey(String redisKey) {
+        resetPwKeyRepository.deleteById(redisKey);
+    }
 }
