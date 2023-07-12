@@ -32,7 +32,6 @@ public class Member extends BaseTimeEntity {
     @Enumerated(value=EnumType.STRING)
     private Role role;
     private String provider;
-    private String refreshToken;
 
     @OneToMany(mappedBy="member", fetch= FetchType.LAZY)
     private List<Booking> bookings=new ArrayList<>();
@@ -61,14 +60,6 @@ public class Member extends BaseTimeEntity {
         this.phoneNumber=registerReq.getPhoneNumber();
         this.role= USER;
         this.provider=null;
-    }
-
-    public void changeRefreshToken(String refreshToken){
-        this.refreshToken=refreshToken;
-    }
-
-    public void changePassword(String password){
-        this.password=password;
     }
 
     public void setProvider(String provider){
