@@ -1,9 +1,13 @@
 package dingulcamping.reservationapp.domain.member.controller;
 
-import dingulcamping.reservationapp.domain.member.dto.LoginDto;
-import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
-import dingulcamping.reservationapp.domain.member.dto.TokenDto;
+import dingulcamping.reservationapp.domain.mail.dto.MailDto;
+import dingulcamping.reservationapp.domain.mail.service.MailService;
+import dingulcamping.reservationapp.domain.member.dto.*;
+import dingulcamping.reservationapp.domain.member.entity.Member;
+import dingulcamping.reservationapp.domain.member.entity.ResetPwKey;
+import dingulcamping.reservationapp.domain.member.exception.NameIsNotCorrectException;
 import dingulcamping.reservationapp.domain.member.service.MemberService;
+import dingulcamping.reservationapp.domain.member.service.ResetPwKeyService;
 import dingulcamping.reservationapp.global.security.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @Validated
 @RequiredArgsConstructor
@@ -25,6 +31,8 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MailService mailService;
+    private final ResetPwKeyService resetPwKeyService;
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -64,5 +72,21 @@ public class MemberController {
         Long memberId= JwtUtils.getMemberId(token,secretKey);
         Boolean isPasswordCorrect=memberService.verifyPassword(memberId, password);
         return ResponseEntity.ok(isPasswordCorrect);
+    }
+
+    @PostMapping("/newPassword")
+    public ResponseEntity<String> sendVerifyMail(@Valid @RequestBody FindPwReq findPwReq){
+        Member findMember = memberService.getMemberByEmail(findPwReq.getEmail());
+        if(!findMember.getName().equals(findPwReq.getName())){
+            throw new NameIsNotCorrectException("이름과 메일이 일치하지 않습니다.");
+        }
+        String redisKey = UUID.randomUUID().toString();
+        ResetPwKey resetPwKey = new ResetPwKey(redisKey, findMember.getId());
+        resetPwKeyService.saveRedisKey(resetPwKey);
+        MailDto mailDto = new MailDto();
+        mailDto.setTo(findMember.getEmail());
+        mailDto.setSubject("비밀번호 변경");
+        mailService.sendMail(mailDto,redisKey);
+        return ResponseEntity.ok("메일 전송 완료");
     }
 }
