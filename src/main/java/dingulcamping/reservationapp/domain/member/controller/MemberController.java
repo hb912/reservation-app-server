@@ -36,6 +36,7 @@ public class MemberController {
     @Value("${jwt.secret}")
     private String secretKey;
 
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterReqDto registerReqDto){
         log.info("회원가입 시작");
@@ -49,7 +50,7 @@ public class MemberController {
         log.info("accessToken={}",tokens.getAccessToken());
         String accessToken="Bearer "+tokens.getAccessToken();
         response.addHeader("authorization", accessToken);
-        if(!tokens.getRefreshToken().isEmpty()) {
+        if(tokens.getRefreshToken()!=null) {
             Cookie cookie = new Cookie("refreshToken", tokens.getRefreshToken());
             response.addCookie(cookie);
         }
@@ -94,5 +95,12 @@ public class MemberController {
     public ResponseEntity<MemberIdDto> certificateRedisKey(@Valid String redisKey){
         ResetPwKey findRedisKey = resetPwKeyService.findRedisKey(redisKey);
         return ResponseEntity.ok(new MemberIdDto(findRedisKey.getMemberId()));
+    }
+
+    @PatchMapping("/password")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePwDto changePwDto){
+        memberService.changePassword(changePwDto.getMemberId(),changePwDto.getPassword());
+        resetPwKeyService.deleteKey(changePwDto.getRedisKey());
+        return ResponseEntity.ok("패스워드 변경 완료");
     }
 }
