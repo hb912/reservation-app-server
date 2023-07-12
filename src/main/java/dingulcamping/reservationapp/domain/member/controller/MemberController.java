@@ -89,4 +89,10 @@ public class MemberController {
         mailService.sendMail(mailDto,redisKey);
         return ResponseEntity.ok("메일 전송 완료");
     }
+
+    @GetMapping("/newPassword")
+    public ResponseEntity<MemberIdDto> certificateRedisKey(@Valid String redisKey){
+        ResetPwKey findRedisKey = resetPwKeyService.findRedisKey(redisKey);
+        return ResponseEntity.ok(new MemberIdDto(findRedisKey.getMemberId()));
+    }
 }
