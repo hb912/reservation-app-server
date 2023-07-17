@@ -2,10 +2,10 @@ package dingulcamping.reservationapp.domain.member.service;
 
 import dingulcamping.reservationapp.domain.member.dto.LoginDto;
 import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
+import dingulcamping.reservationapp.domain.member.dto.MemberUpdateDto;
 import dingulcamping.reservationapp.domain.member.dto.TokenDto;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.member.entity.RefreshToken;
-import dingulcamping.reservationapp.domain.member.entity.ResetPwKey;
 import dingulcamping.reservationapp.domain.member.entity.Role;
 import dingulcamping.reservationapp.domain.member.exception.*;
 import dingulcamping.reservationapp.domain.member.repository.MemberRepository;
@@ -104,8 +104,6 @@ public class MemberService {
         return findMember.get();
     }
 
-
-
     @Transactional(readOnly = false)
     public void changePassword(Long memberId, String password) {
         Optional<Member> findMember = memberRepository.findById(memberId);
@@ -113,5 +111,18 @@ public class MemberService {
             throw new MemberIsNotExistException("멤버 정보가 존재하지 않습니다.");
         }
         setNewPassword(password,findMember.get());
+    }
+
+    @Transactional(readOnly = false)
+    public void updateMember(Long memberId, MemberUpdateDto memberUpdateDto) {
+        Optional<Member> findMember = memberRepository.findById(memberId);
+        if(findMember.isEmpty()){
+            throw new MemberIsNotExistException("유저 정보를 불러오는데 실패했습니다.");
+        }
+        Member member = findMember.get();
+        if(memberUpdateDto.getPassword()!=null){
+            setNewPassword(memberUpdateDto.getPassword(),member);
+        }
+        member.updateMember(memberUpdateDto);
     }
 }
