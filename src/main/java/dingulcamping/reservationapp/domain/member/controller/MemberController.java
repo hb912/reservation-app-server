@@ -110,11 +110,17 @@ public class MemberController {
         return ResponseEntity.ok("변경 성공");
     }
 
+    @DeleteMapping("/user")
+    public ResponseEntity<String> memberDelete(HttpServletRequest request){
+        Long memberId = getMemberId(request);
+        memberService.deleteMember(memberId);
+        return ResponseEntity.ok("탈퇴 성공");
+    }
+
     private Long getMemberId(HttpServletRequest request) {
         final String authorization= request.getHeader(HttpHeaders.AUTHORIZATION);
         String token=authorization.split(" ")[1];
         Long memberId= JwtUtils.getMemberId(token,secretKey);
         return memberId;
     }
-
 }

@@ -125,4 +125,9 @@ public class MemberService {
         }
         member.updateMember(memberUpdateDto);
     }
+
+    @Transactional(readOnly = false)
+    public void deleteMember(Long memberId){
+        memberRepository.deleteById(memberId);
+    }
 }

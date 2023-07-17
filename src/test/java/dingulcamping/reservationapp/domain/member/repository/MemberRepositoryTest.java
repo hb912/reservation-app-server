@@ -90,4 +90,21 @@ class MemberRepositoryTest {
         }
     }
 
+    @Test
+    public void deleteByNameAndEmail(){
+        //given
+        String name1 = "memberA";
+        String email1 = "ab@ab.com";
+        String email2 = "ab@abb.com";
+        //when
+        memberRepository.deleteByNameAndEmail(name1,email1);
+        //then
+        Optional<Member> findByEmail = memberRepository.findOneByEmail(email1);
+        Optional<Member> findByEmail2 = memberRepository.findOneByEmail(email2);
+
+        assertThat(findByEmail.isEmpty()).isTrue();
+        assertThat(findByEmail2.isEmpty()).isFalse();
+
+    }
+
 }
