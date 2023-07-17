@@ -68,9 +68,7 @@ public class MemberController {
 
     @GetMapping("/confirmPW")
     public ResponseEntity<Boolean> confirmPassword(@Valid String password, HttpServletRequest request){
-        final String authorization=request.getHeader(HttpHeaders.AUTHORIZATION);
-        String token=authorization.split(" ")[1];
-        Long memberId= JwtUtils.getMemberId(token,secretKey);
+        Long memberId = getMemberId(request);
         Boolean isPasswordCorrect=memberService.verifyPassword(memberId, password);
         return ResponseEntity.ok(isPasswordCorrect);
     }
@@ -103,4 +101,20 @@ public class MemberController {
         resetPwKeyService.deleteKey(changePwDto.getRedisKey());
         return ResponseEntity.ok("패스워드 변경 완료");
     }
+
+    @PatchMapping("/user")
+    public ResponseEntity<String> memberUpdate(@Valid @RequestBody MemberUpdateDto memberUpdateDto,
+                                               HttpServletRequest request){
+        Long memberId=getMemberId(request);
+        memberService.updateMember(memberId, memberUpdateDto);
+        return ResponseEntity.ok("변경 성공");
+    }
+
+    private Long getMemberId(HttpServletRequest request) {
+        final String authorization= request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token=authorization.split(" ")[1];
+        Long memberId= JwtUtils.getMemberId(token,secretKey);
+        return memberId;
+    }
+
 }
