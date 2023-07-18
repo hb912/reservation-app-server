@@ -38,7 +38,9 @@ public class WebSecurityConfig{
         return http
                 .authorizeHttpRequests((authz)-> authz
                         .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/newPassword").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/register").permitAll()
+                        .requestMatchers(HttpMethod.PATCH,"/api/password").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/**").permitAll())

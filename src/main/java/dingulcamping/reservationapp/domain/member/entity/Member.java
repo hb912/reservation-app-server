@@ -2,12 +2,12 @@ package dingulcamping.reservationapp.domain.member.entity;
 
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
 import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
+import dingulcamping.reservationapp.domain.member.dto.MemberUpdateDto;
 import dingulcamping.reservationapp.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,6 @@ public class Member extends BaseTimeEntity {
     @Enumerated(value=EnumType.STRING)
     private Role role;
     private String provider;
-    private String refreshToken;
 
     @OneToMany(mappedBy="member", fetch= FetchType.LAZY)
     private List<Booking> bookings=new ArrayList<>();
@@ -63,20 +62,21 @@ public class Member extends BaseTimeEntity {
         this.provider=null;
     }
 
-    public void changeRefreshToken(String refreshToken){
-        this.refreshToken=refreshToken;
-    }
-
-    public void changePassword(String password){
-        this.password=password;
-    }
-
     public void setProvider(String provider){
         this.provider=provider;
     }
 
     public void setEncryptedPassword(String encryptedPassword){
         this.password=encryptedPassword;
+    }
+
+    public void updateMember(MemberUpdateDto memberUpdateDto){
+        if(memberUpdateDto.getName()!=null){
+            this.name= memberUpdateDto.getName();
+        }
+        if(memberUpdateDto.getPhoneNumber()!=null){
+            this.phoneNumber= memberUpdateDto.getPhoneNumber();
+        }
     }
 
 }
