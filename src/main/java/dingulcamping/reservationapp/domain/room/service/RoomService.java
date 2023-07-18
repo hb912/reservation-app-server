@@ -36,4 +36,13 @@ public class RoomService {
         return roomRepository.findInfoAll();
     }
 
+    @Transactional(readOnly = false)
+    public void createRoom(RoomCreateDto roomCreateDto){
+        Optional<Room> findOneByName = roomRepository.findOneByName(roomCreateDto.getName());
+        if(findOneByName.isPresent()){
+            throw new ExistSameNameRoomException("동일한 이름의 룸이 존재합니다.");
+        }
+        Room room = new Room(roomCreateDto);
+        roomRepository.save(room);
+    }
 }
