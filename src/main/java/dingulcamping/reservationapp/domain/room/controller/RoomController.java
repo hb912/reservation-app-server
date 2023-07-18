@@ -34,4 +34,9 @@ public class RoomController {
         return ResponseEntity.ok(allRooms);
     }
 
+    @PostMapping("/create")
+    public ResponseEntity<String> getRooms(@RequestBody RoomCreateDto roomCreateDto){
+        roomService.createRoom(roomCreateDto);
+        return ResponseEntity.ok(roomCreateDto.getName()+"등록 완료");
+    }
 }

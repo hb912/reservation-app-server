@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -71,11 +71,10 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(memberId,
-                null, List.of(new SimpleGrantedAuthority(role.toString())));
+                null, Arrays.asList(new SimpleGrantedAuthority("ROLE_"+role.toString())));
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request,response);
-
     }
 
     public Boolean checkRefreshToken(String token, String secretKey){

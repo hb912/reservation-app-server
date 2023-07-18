@@ -43,6 +43,7 @@ public class WebSecurityConfig{
                         .requestMatchers(HttpMethod.PATCH,"/api/password").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/room/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/room").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/room/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN","ROLE_ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/**").permitAll())
