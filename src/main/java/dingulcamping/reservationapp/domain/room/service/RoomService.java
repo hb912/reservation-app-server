@@ -32,4 +32,8 @@ public class RoomService {
         return roomDetailDto;
     }
 
+    public List<RoomInfoDto> getAllRooms(){
+        return roomRepository.findInfoAll();
+    }
+
 }
