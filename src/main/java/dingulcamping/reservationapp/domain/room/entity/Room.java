@@ -1,5 +1,6 @@
 package dingulcamping.reservationapp.domain.room.entity;
 
+import dingulcamping.reservationapp.domain.room.dto.RoomCreateDto;
 import dingulcamping.reservationapp.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -47,6 +48,18 @@ public class Room extends BaseTimeEntity {
         this.maxPeople = maxPeople;
         this.minPeople = minPeople;
         this.mapPosition = mapPosition;
+    }
+
+    public Room(RoomCreateDto roomCreateDto){
+        this.name = roomCreateDto.getName();
+        this.price = roomCreateDto.getPrice();
+        this.content = roomCreateDto.getContent();
+        this.imgSrc.addAll(roomCreateDto.getImgSrc());
+        this.roomType = roomCreateDto.getRoomType();
+        this.icon = roomCreateDto.getIcon();
+        this.maxPeople = roomCreateDto.getMaxPeople();
+        this.minPeople = roomCreateDto.getMinPeople();
+        this.mapPosition = roomCreateDto.getPosition();
     }
 
     public void addImg(String imgSrc){
