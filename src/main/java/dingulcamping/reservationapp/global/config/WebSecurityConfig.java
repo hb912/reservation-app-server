@@ -42,6 +42,7 @@ public class WebSecurityConfig{
                         .requestMatchers(HttpMethod.POST,"/api/register").permitAll()
                         .requestMatchers(HttpMethod.PATCH,"/api/password").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/room/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/room").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN","ROLE_ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/**").permitAll())

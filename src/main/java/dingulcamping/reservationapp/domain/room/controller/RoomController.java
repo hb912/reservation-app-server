@@ -28,4 +28,10 @@ public class RoomController {
         return ResponseEntity.ok(roomDetail);
     }
 
+    @GetMapping("")
+    public ResponseEntity<List<RoomInfoDto>> getRooms(){
+        List<RoomInfoDto> allRooms = roomService.getAllRooms();
+        return ResponseEntity.ok(allRooms);
+    }
+
 }
