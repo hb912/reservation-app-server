@@ -1,6 +1,7 @@
 package dingulcamping.reservationapp.domain.booking.entity;
 
 import com.querydsl.core.annotations.QueryEntity;
+import dingulcamping.reservationapp.domain.booking.dto.BookingCreateDto;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.review.entity.Review;
 import dingulcamping.reservationapp.domain.room.entity.Room;
@@ -49,8 +50,7 @@ public class Booking extends BaseTimeEntity {
     private Review review;
 
     public Booking(int price, Date startDate, Date endDate, int peopleNumber,String requirements, Room room,
-                   Member member
-                   ) {
+                   Member member) {
         this.price = price;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -60,6 +60,19 @@ public class Booking extends BaseTimeEntity {
         this.room = room;
         this.member = member;
         this.status=BookingStatus.BOOKING_REQ;
+    }
+
+    public Booking(BookingCreateDto bookingCreateDto,Member member,Room room) {
+        this.price = bookingCreateDto.getPrice();
+        this.startDate = bookingCreateDto.getStartDate();
+        this.endDate = bookingCreateDto.getEndDate();
+        getProcessDate(startDate, endDate);
+        this.peopleNumber = bookingCreateDto.getPeopleNumber();
+        this.requirements=bookingCreateDto.getRequirements();
+        this.room = room;
+        this.member = member;
+        this.status=BookingStatus.BOOKING_REQ;
+        this.review=null;
     }
 
     public void createReview(Review review) {

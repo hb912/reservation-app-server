@@ -28,6 +28,22 @@ public class BookingService {
     private final RoomRepository roomRepository;
     private final AuthUtils authUtils;
 
+    @Transactional
+    public void createBooking(BookingCreateDto bookingCreateDto, Member member){
+        Date today = new Date(System.currentTimeMillis());
+        if(bookingCreateDto.getEndDate().compareTo(bookingCreateDto.getStartDate())<=0){
+            throw new InvalidStartDate("종료날짜가 시작날짜보다 작거나 같습니다.");
+        }
+        if(bookingCreateDto.getStartDate().before(today)){
+            throw new InvalidStartDate("과거의 예약은 진행할 수 없습니다");
+        }
+
+        Room room = roomRepository.findById(bookingCreateDto.getRoomId()).orElseThrow(NotExistRoomException::new);
+        Booking booking = new Booking(bookingCreateDto,member,room);
+        isBookingExist(booking.getProcessDate(), bookingCreateDto.getRoomId());
+        booking.setRoom(room);
+        bookingRepository.save(booking);
+    }
 
     private void isBookingExist(List<Date> processDate, Long roomId) {
         List<Booking> existBooking = bookingRepository.findExistBooking(processDate, roomId);
