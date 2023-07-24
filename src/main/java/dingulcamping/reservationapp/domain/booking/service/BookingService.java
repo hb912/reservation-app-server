@@ -38,10 +38,14 @@ public class BookingService {
             throw new InvalidStartDate("과거의 예약은 진행할 수 없습니다");
         }
 
+        int peopleNumber = bookingCreateDto.getPeopleNumber();
         Room room = roomRepository.findById(bookingCreateDto.getRoomId()).orElseThrow(NotExistRoomException::new);
+        if(peopleNumber>room.getMaxPeople()||peopleNumber<room.getMinPeople()){
+            throw new InvalidPeopleNumberException("정원이 맞지 않습니다.");
+        }
+
         Booking booking = new Booking(bookingCreateDto,member,room);
         isBookingExist(booking.getProcessDate(), bookingCreateDto.getRoomId());
-        booking.setRoom(room);
         bookingRepository.save(booking);
     }
 
