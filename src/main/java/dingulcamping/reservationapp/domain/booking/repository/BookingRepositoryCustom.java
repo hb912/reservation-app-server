@@ -15,4 +15,5 @@ public interface BookingRepositoryCustom {
     List<Room> findDisableRoomsByDate(List<Date> dates);
     List<Booking> findRequests();
     List<Booking> findConfirms();
+    List<Booking> findExistBooking(List<Date> processDates, Long roomId);
 }

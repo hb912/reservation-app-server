@@ -76,6 +76,15 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
     }
 
     @Override
+    public List<Booking> findExistBooking(List<Date> dates, Long roomId) {
+        return queryFactory
+                .selectFrom(booking)
+                .leftJoin(booking.room,room)
+                .where(room.id.eq(roomId).and(booking.processDate.any().in(dates)))
+                .fetch();
+    }
+
+    @Override
     public List<Booking> findRequests() {
         Date currentDate = new Date(System.currentTimeMillis());
         return queryFactory
