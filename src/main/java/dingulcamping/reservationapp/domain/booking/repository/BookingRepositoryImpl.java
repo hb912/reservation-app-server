@@ -2,7 +2,12 @@ package dingulcamping.reservationapp.domain.booking.repository;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import dingulcamping.reservationapp.domain.booking.dto.BookingInfoDto;
+import dingulcamping.reservationapp.domain.booking.dto.QBookingInfoDto;
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
+import dingulcamping.reservationapp.domain.member.entity.QMember;
+import dingulcamping.reservationapp.domain.review.entity.QReview;
+import dingulcamping.reservationapp.domain.room.entity.QRoom;
 import dingulcamping.reservationapp.domain.room.entity.Room;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +25,7 @@ import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.B
 import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.BOOKING_REQ;
 import static dingulcamping.reservationapp.domain.booking.entity.QBooking.booking;
 import static dingulcamping.reservationapp.domain.member.entity.QMember.member;
+import static dingulcamping.reservationapp.domain.review.entity.QReview.*;
 import static dingulcamping.reservationapp.domain.room.entity.QRoom.room;
 
 @RequiredArgsConstructor
@@ -28,11 +34,25 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Booking> findAllByMemberId(Long memberId, Pageable pageable) {
-        List<Booking> content = queryFactory
-                .selectFrom(booking)
+    public Page<BookingInfoDto> findAllByMemberId(Long memberId, Pageable pageable) {
+        List<BookingInfoDto> content = queryFactory
+                .select(new QBookingInfoDto(
+                        booking.id.as("_id"),
+                        booking.price,
+                        booking.startDate,
+                        booking.endDate,
+                        booking.peopleNumber,
+                        booking.requirements,
+                        booking.status,
+                        room.id.as("roomId"),
+                        room.name.as("roomName"),
+                        member.name.as("memberName"),
+                        review
+                ))
+                .from(booking)
                 .leftJoin(booking.member, member)
                 .leftJoin(booking.room, room)
+                .leftJoin(booking.review,review)
                 .where(member.id.eq(memberId))
                 .orderBy(booking.createdDate.desc())
                 .offset(pageable.getOffset())

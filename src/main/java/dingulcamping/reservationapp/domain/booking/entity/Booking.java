@@ -60,6 +60,7 @@ public class Booking extends BaseTimeEntity {
         this.room = room;
         this.member = member;
         this.status=BookingStatus.BOOKING_REQ;
+        this.review=null;
     }
 
     public Booking(BookingCreateDto bookingCreateDto,Member member,Room room) {
