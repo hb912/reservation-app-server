@@ -1,6 +1,8 @@
 package dingulcamping.reservationapp.domain.booking.service;
 
 import dingulcamping.reservationapp.domain.booking.dto.BookingCreateDto;
+import dingulcamping.reservationapp.domain.booking.dto.BookingInfoDto;
+import dingulcamping.reservationapp.domain.booking.dto.PageBookingInfoDto;
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
 import dingulcamping.reservationapp.domain.booking.exception.DisableBookingDateException;
 import dingulcamping.reservationapp.domain.booking.exception.InvalidStartDate;
@@ -12,6 +14,8 @@ import dingulcamping.reservationapp.domain.room.repository.RoomRepository;
 import dingulcamping.reservationapp.global.security.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +51,12 @@ public class BookingService {
         Booking booking = new Booking(bookingCreateDto,member,room);
         isBookingExist(booking.getProcessDate(), bookingCreateDto.getRoomId());
         bookingRepository.save(booking);
+    }
+
+    public PageBookingInfoDto getByUserId(Long memberId, Pageable pageable){
+
+        Page<BookingInfoDto> bookings = bookingRepository.findAllByMemberId(memberId, pageable);
+        return new PageBookingInfoDto(bookings.getContent(), bookings.getTotalPages());
     }
 
     private void isBookingExist(List<Date> processDate, Long roomId) {
