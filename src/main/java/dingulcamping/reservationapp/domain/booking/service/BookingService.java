@@ -65,4 +65,15 @@ public class BookingService {
             throw new DisableBookingDateException("해당 기간에 이미 예약이 존재합니다.");
         }
     }
+
+    public List<SimpleRoomDto> getRoomsByDate(SearchByDateDto searchByDateDto) {
+        Date startDate = new Date(searchByDateDto.getStartDate().getTime());
+        Date endDate = new Date(searchByDateDto.getEndDate().getTime());
+        List<Date> dates = getProcessDate(startDate, endDate);
+        List<SimpleRoomDto> disableRoomsByDate = bookingRepository.findDisableRoomsByDate(dates);
+        List<SimpleRoomDto> disableRoomByPeopleNumber =
+                roomRepository.findDisableRoomByPeopleNumber(searchByDateDto.getPeopleNumber());
+        return Stream.concat(disableRoomsByDate.stream(), disableRoomByPeopleNumber.stream()).distinct()
+                .collect(Collectors.toList());
+    }
 }
