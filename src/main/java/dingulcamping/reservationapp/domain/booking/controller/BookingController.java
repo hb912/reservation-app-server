@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
 
 @RestController
@@ -52,4 +53,11 @@ public class BookingController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/byRoom")
+    public ResponseEntity<List<Date>> findDatesByRoom(@RequestParam("roomID") Long roomID){
+        List<Date> result = bookingService.getDatesByRoom(roomID);
+        return ResponseEntity.ok(result);
+    }
+
+    
 }

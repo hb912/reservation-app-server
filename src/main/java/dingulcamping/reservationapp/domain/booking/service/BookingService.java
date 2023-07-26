@@ -93,4 +93,8 @@ public class BookingService {
         }
         return processDate;
     }
+
+    public List<Date> getDatesByRoom(Long roomID) {
+        return bookingRepository.findDisableDatesByRoomId(roomID);
+    }
 }
