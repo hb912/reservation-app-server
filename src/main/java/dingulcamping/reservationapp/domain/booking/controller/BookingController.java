@@ -27,14 +27,14 @@ public class BookingController {
     @PostMapping("/create")
     public ResponseEntity<String> createBooking(@Valid @RequestBody BookingCreateDto bookingCreateDto,
                                                 HttpServletRequest request){
-        Member member = authUtils.getMember(request);
+        Member member = authUtils.getMember();
         bookingService.createBooking(bookingCreateDto,member);
         return ResponseEntity.ok("생성완료");
     }
 
     @GetMapping("/user")
     public ResponseEntity<PageBookingInfoDto> findBookingById(Pageable pageable, HttpServletRequest request){
-        Long memberId = authUtils.getMemberId(request);
+        Long memberId = authUtils.getMemberId();
         PageBookingInfoDto result = bookingService.getByUserId(memberId, pageable);
         return ResponseEntity.ok(result);
     }
