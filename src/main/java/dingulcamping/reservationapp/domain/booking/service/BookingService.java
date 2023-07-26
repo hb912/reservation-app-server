@@ -1,13 +1,13 @@
 package dingulcamping.reservationapp.domain.booking.service;
 
-import dingulcamping.reservationapp.domain.booking.dto.BookingCreateDto;
-import dingulcamping.reservationapp.domain.booking.dto.BookingInfoDto;
-import dingulcamping.reservationapp.domain.booking.dto.PageBookingInfoDto;
+import dingulcamping.reservationapp.domain.booking.dto.*;
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
 import dingulcamping.reservationapp.domain.booking.exception.DisableBookingDateException;
+import dingulcamping.reservationapp.domain.booking.exception.InvalidPeopleNumberException;
 import dingulcamping.reservationapp.domain.booking.exception.InvalidStartDate;
 import dingulcamping.reservationapp.domain.booking.repository.BookingRepository;
 import dingulcamping.reservationapp.domain.member.entity.Member;
+import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
 import dingulcamping.reservationapp.domain.room.entity.Room;
 import dingulcamping.reservationapp.domain.room.exception.NotExistRoomException;
 import dingulcamping.reservationapp.domain.room.repository.RoomRepository;
@@ -20,7 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -75,5 +79,18 @@ public class BookingService {
                 roomRepository.findDisableRoomByPeopleNumber(searchByDateDto.getPeopleNumber());
         return Stream.concat(disableRoomsByDate.stream(), disableRoomByPeopleNumber.stream()).distinct()
                 .collect(Collectors.toList());
+    }
+
+    private List<Date> getProcessDate(Date startDate, Date endDate) {
+        List<Date> processDate=new ArrayList<>();
+        Date curDate= startDate;
+        while(curDate.before(endDate)){
+            processDate.add(curDate);
+            Calendar calendar=Calendar.getInstance();
+            calendar.setTime(curDate);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            curDate=new Date(calendar.getTimeInMillis());
+        }
+        return processDate;
     }
 }
