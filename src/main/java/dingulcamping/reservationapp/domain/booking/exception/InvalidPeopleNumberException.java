@@ -1,4 +1,4 @@
-package dingulcamping.reservationapp.domain.booking.service;
+package dingulcamping.reservationapp.domain.booking.exception;
 
 public class InvalidPeopleNumberException extends RuntimeException {
     public InvalidPeopleNumberException() {
