@@ -47,9 +47,9 @@ public class BookingController {
     }
 
     @GetMapping("/byDates")
-    public ResponseEntity<List<SimpleRoomDto>> findDisableRoomsByDate(@ModelAttribute SearchByDateDto
-    searchByDateDto){
-        List<SimpleRoomDto> result=bookingService.getRoomsByDate(searchByDateDto);
+    public ResponseEntity<List<SimpleRoomDto>> findDisableRoomsByDate(@ModelAttribute SearchRoomByDateDto
+                                                                              searchRoomByDateDto){
+        List<SimpleRoomDto> result=bookingService.getRoomsByDate(searchRoomByDateDto);
         return ResponseEntity.ok(result);
     }
 

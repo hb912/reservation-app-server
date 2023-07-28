@@ -12,12 +12,13 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchByDateDto {
+public class SearchRoomByDateDto {
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
 
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date endDate;
 
-    private Long roomID;
+    private int peopleNumber;
 }

@@ -70,13 +70,13 @@ public class BookingService {
         }
     }
 
-    public List<SimpleRoomDto> getRoomsByDate(SearchByDateDto searchByDateDto) {
-        Date startDate = new Date(searchByDateDto.getStartDate().getTime());
-        Date endDate = new Date(searchByDateDto.getEndDate().getTime());
+    public List<SimpleRoomDto> getRoomsByDate(SearchRoomByDateDto searchRoomByDateDto) {
+        Date startDate = new Date(searchRoomByDateDto.getStartDate().getTime());
+        Date endDate = new Date(searchRoomByDateDto.getEndDate().getTime());
         List<Date> dates = getProcessDate(startDate, endDate);
         List<SimpleRoomDto> disableRoomsByDate = bookingRepository.findDisableRoomsByDate(dates);
         List<SimpleRoomDto> disableRoomByPeopleNumber =
-                roomRepository.findDisableRoomByPeopleNumber(searchByDateDto.getPeopleNumber());
+                roomRepository.findDisableRoomByPeopleNumber(searchRoomByDateDto.getPeopleNumber());
         return Stream.concat(disableRoomsByDate.stream(), disableRoomByPeopleNumber.stream()).distinct()
                 .collect(Collectors.toList());
     }
