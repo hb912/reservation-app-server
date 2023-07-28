@@ -38,13 +38,9 @@ public class BookingService {
 
     @Transactional
     public void createBooking(BookingCreateDto bookingCreateDto, Member member){
-        Date today = new Date(System.currentTimeMillis());
-        if(bookingCreateDto.getEndDate().compareTo(bookingCreateDto.getStartDate())<=0){
-            throw new InvalidStartDate("종료날짜가 시작날짜보다 작거나 같습니다.");
-        }
-        if(bookingCreateDto.getStartDate().before(today)){
-            throw new InvalidStartDate("과거의 예약은 진행할 수 없습니다");
-        }
+        Date startDate = bookingCreateDto.getStartDate();
+        Date endDate = bookingCreateDto.getEndDate();
+        checkDates(startDate,endDate);
 
         int peopleNumber = bookingCreateDto.getPeopleNumber();
         Room room = roomRepository.findById(bookingCreateDto.getRoomId()).orElseThrow(NotExistRoomException::new);
@@ -55,6 +51,16 @@ public class BookingService {
         Booking booking = new Booking(bookingCreateDto,member,room);
         isBookingExist(booking.getProcessDate(), bookingCreateDto.getRoomId());
         bookingRepository.save(booking);
+    }
+
+    private static void checkDates(Date startDate, Date endDate) {
+        Date today = new Date(System.currentTimeMillis());
+        if(endDate.compareTo(startDate)<=0){
+            throw new InvalidStartDate("종료날짜가 시작날짜보다 작거나 같습니다.");
+        }
+        if(startDate.before(today)){
+            throw new InvalidStartDate("과거의 예약은 진행할 수 없습니다");
+        }
     }
 
     public PageBookingInfoDto getByUserId(Long memberId, Pageable pageable){
