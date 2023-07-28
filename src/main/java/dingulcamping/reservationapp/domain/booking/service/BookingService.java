@@ -103,4 +103,13 @@ public class BookingService {
     public List<Date> getDatesByRoom(Long roomID) {
         return bookingRepository.findDisableDatesByRoomId(roomID);
     }
+
+    public void confirmBooking(SearchByDateDto searchByDateDto){
+        Date startDate = new Date(searchByDateDto.getStartDate().getTime());
+        Date endDate = new Date(searchByDateDto.getEndDate().getTime());
+        List<Date> processDate = getProcessDate(startDate, endDate);
+
+        checkDates(startDate,endDate);
+        isBookingExist(processDate, searchByDateDto.getRoomID());
+    }
 }

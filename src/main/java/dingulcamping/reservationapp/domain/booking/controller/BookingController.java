@@ -1,11 +1,10 @@
 package dingulcamping.reservationapp.domain.booking.controller;
 
 import dingulcamping.reservationapp.domain.booking.dto.BookingCreateDto;
-import dingulcamping.reservationapp.domain.booking.exception.InvalidPeopleNumberException;
-import dingulcamping.reservationapp.domain.booking.exception.InvalidStartDate;
+import dingulcamping.reservationapp.domain.booking.dto.SearchByDateDto;
 import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
 import dingulcamping.reservationapp.domain.booking.dto.PageBookingInfoDto;
-import dingulcamping.reservationapp.domain.booking.dto.SearchByDateDto;
+import dingulcamping.reservationapp.domain.booking.dto.SearchRoomByDateDto;
 import dingulcamping.reservationapp.domain.booking.service.BookingService;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.global.security.AuthUtils;
@@ -59,5 +58,11 @@ public class BookingController {
         return ResponseEntity.ok(result);
     }
 
-    
+    @GetMapping("/confirm")
+    public ResponseEntity<String> confirmBooking(@RequestBody SearchByDateDto searchByDateDto){
+        bookingService.confirmBooking(searchByDateDto);
+        return ResponseEntity.ok("확인 완료");
+    }
+
+
 }
