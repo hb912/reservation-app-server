@@ -2,9 +2,11 @@ package dingulcamping.reservationapp.domain.booking.service;
 
 import dingulcamping.reservationapp.domain.booking.dto.*;
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
+import dingulcamping.reservationapp.domain.booking.entity.BookingStatus;
 import dingulcamping.reservationapp.domain.booking.exception.DisableBookingDateException;
 import dingulcamping.reservationapp.domain.booking.exception.InvalidPeopleNumberException;
 import dingulcamping.reservationapp.domain.booking.exception.InvalidStartDate;
+import dingulcamping.reservationapp.domain.booking.exception.NotExistBookingException;
 import dingulcamping.reservationapp.domain.booking.repository.BookingRepository;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
@@ -53,7 +55,7 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
-    private static void checkDates(Date startDate, Date endDate) {
+    private void checkDates(Date startDate, Date endDate) {
         Date today = new Date(System.currentTimeMillis());
         if(endDate.compareTo(startDate)<=0){
             throw new InvalidStartDate("종료날짜가 시작날짜보다 작거나 같습니다.");
@@ -111,5 +113,12 @@ public class BookingService {
 
         checkDates(startDate,endDate);
         isBookingExist(processDate, searchByDateDto.getRoomID());
+    }
+
+    @Transactional
+    public void changeStatus(Long bookingID, BookingStatus bookingStatus) {
+        Booking booking = bookingRepository.findById(bookingID).orElseThrow(NotExistBookingException::new);
+        checkDates(booking.getStartDate(),booking.getEndDate());
+        booking.changeBookingStatus(bookingStatus);
     }
 }
