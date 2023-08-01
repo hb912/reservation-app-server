@@ -64,5 +64,11 @@ public class BookingController {
         return ResponseEntity.ok("확인 완료");
     }
 
+    @PatchMapping("/cancel")
+    public ResponseEntity<String> cancelBooking(@RequestBody Long bookingID){
+        bookingService.changeStatus(bookingID, BookingStatus.CANCEL_REQ);
+        return ResponseEntity.ok("취소 신청 완료");
+    }
+
 
 }
