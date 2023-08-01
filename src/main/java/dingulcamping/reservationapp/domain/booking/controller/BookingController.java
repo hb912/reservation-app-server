@@ -70,5 +70,9 @@ public class BookingController {
         return ResponseEntity.ok("취소 신청 완료");
     }
 
+    @PatchMapping("/review")
+    public ResponseEntity<String> addReview(@RequestBody Long bookingID){
+        return ResponseEntity.ok("리뷰 작성 완료");
+    }
 
 }
