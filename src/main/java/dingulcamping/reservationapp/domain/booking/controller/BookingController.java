@@ -2,6 +2,7 @@ package dingulcamping.reservationapp.domain.booking.controller;
 
 import dingulcamping.reservationapp.domain.booking.dto.BookingCreateDto;
 import dingulcamping.reservationapp.domain.booking.dto.SearchByDateDto;
+import dingulcamping.reservationapp.domain.booking.entity.BookingStatus;
 import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
 import dingulcamping.reservationapp.domain.booking.dto.PageBookingInfoDto;
 import dingulcamping.reservationapp.domain.booking.dto.SearchRoomByDateDto;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.util.List;
+
+import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.BOOKING_CANCEL;
+import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.CANCEL_REQ;
 
 @RestController
 @RequiredArgsConstructor
@@ -66,7 +70,7 @@ public class BookingController {
 
     @PatchMapping("/cancel")
     public ResponseEntity<String> cancelBooking(@RequestBody Long bookingID){
-        bookingService.changeStatus(bookingID, BookingStatus.CANCEL_REQ);
+        bookingService.changeStatus(bookingID, CANCEL_REQ);
         return ResponseEntity.ok("취소 신청 완료");
     }
 
@@ -75,4 +79,9 @@ public class BookingController {
         return ResponseEntity.ok("리뷰 작성 완료");
     }
 
+    @DeleteMapping("")
+    public ResponseEntity<String> deleteBooking(@RequestBody Long bookingId){
+        bookingService.changeStatus(bookingId, BOOKING_CANCEL);
+        return ResponseEntity.ok("예약 취소 완료");
+    }
 }
