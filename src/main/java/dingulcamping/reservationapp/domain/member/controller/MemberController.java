@@ -8,6 +8,7 @@ import dingulcamping.reservationapp.domain.member.entity.ResetPwKey;
 import dingulcamping.reservationapp.domain.member.exception.NameIsNotCorrectException;
 import dingulcamping.reservationapp.domain.member.service.MemberService;
 import dingulcamping.reservationapp.domain.member.service.ResetPwKeyService;
+import dingulcamping.reservationapp.global.security.AuthUtils;
 import dingulcamping.reservationapp.global.security.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MailService mailService;
     private final ResetPwKeyService resetPwKeyService;
+    private final AuthUtils authUtils;
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -68,7 +70,7 @@ public class MemberController {
 
     @GetMapping("/confirmPW")
     public ResponseEntity<Boolean> confirmPassword(@Valid String password, HttpServletRequest request){
-        Long memberId = getMemberId(request);
+        Long memberId = authUtils.getMemberId();
         Boolean isPasswordCorrect=memberService.verifyPassword(memberId, password);
         return ResponseEntity.ok(isPasswordCorrect);
     }
@@ -105,22 +107,16 @@ public class MemberController {
     @PatchMapping("/user")
     public ResponseEntity<String> memberUpdate(@Valid @RequestBody MemberUpdateDto memberUpdateDto,
                                                HttpServletRequest request){
-        Long memberId=getMemberId(request);
+        Long memberId = authUtils.getMemberId();
         memberService.updateMember(memberId, memberUpdateDto);
         return ResponseEntity.ok("변경 성공");
     }
 
     @DeleteMapping("/user")
     public ResponseEntity<String> memberDelete(HttpServletRequest request){
-        Long memberId = getMemberId(request);
+        Long memberId = authUtils.getMemberId();
         memberService.deleteMember(memberId);
         return ResponseEntity.ok("탈퇴 성공");
     }
 
-    private Long getMemberId(HttpServletRequest request) {
-        final String authorization= request.getHeader(HttpHeaders.AUTHORIZATION);
-        String token=authorization.split(" ")[1];
-        Long memberId= JwtUtils.getMemberId(token,secretKey);
-        return memberId;
-    }
 }

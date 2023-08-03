@@ -2,24 +2,25 @@ package dingulcamping.reservationapp.domain.booking.repository;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import dingulcamping.reservationapp.domain.booking.dto.BookingInfoDto;
+import dingulcamping.reservationapp.domain.booking.dto.QBookingInfoDto;
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
-import dingulcamping.reservationapp.domain.room.entity.Room;
+import dingulcamping.reservationapp.domain.room.dto.QSimpleRoomDto;
+import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.BOOKING_CONFIRM;
 import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.BOOKING_REQ;
 import static dingulcamping.reservationapp.domain.booking.entity.QBooking.booking;
 import static dingulcamping.reservationapp.domain.member.entity.QMember.member;
+import static dingulcamping.reservationapp.domain.review.entity.QReview.review;
 import static dingulcamping.reservationapp.domain.room.entity.QRoom.room;
 
 @RequiredArgsConstructor
@@ -28,11 +29,25 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Booking> findAllByMemberId(Long memberId, Pageable pageable) {
-        List<Booking> content = queryFactory
-                .selectFrom(booking)
+    public Page<BookingInfoDto> findAllByMemberId(Long memberId, Pageable pageable) {
+        List<BookingInfoDto> content = queryFactory
+                .select(new QBookingInfoDto(
+                        booking.id.as("_id"),
+                        booking.price,
+                        booking.startDate,
+                        booking.endDate,
+                        booking.peopleNumber,
+                        booking.requirements,
+                        booking.status,
+                        room.id.as("roomId"),
+                        room.name.as("roomName"),
+                        member.name.as("memberName"),
+                        review
+                ))
+                .from(booking)
                 .leftJoin(booking.member, member)
                 .leftJoin(booking.room, room)
+                .leftJoin(booking.review,review)
                 .where(member.id.eq(memberId))
                 .orderBy(booking.createdDate.desc())
                 .offset(pageable.getOffset())
@@ -66,12 +81,25 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
     }
 
     @Override
-    public List<Room> findDisableRoomsByDate(List<Date> dates) {
+    public List<SimpleRoomDto> findDisableRoomsByDate(List<Date> dates) {
         return queryFactory
-                .select(booking.room)
+                .select(new QSimpleRoomDto(
+                        room.id.as("_id"),
+                        room.name
+                ))
+                .distinct()
                 .from(booking)
                 .leftJoin(booking.room,room)
                 .where(booking.status.eq(BOOKING_CONFIRM).and(booking.processDate.any().in(dates)))
+                .fetch();
+    }
+
+    @Override
+    public List<Booking> findExistBooking(List<Date> dates, Long roomId) {
+        return queryFactory
+                .selectFrom(booking)
+                .leftJoin(booking.room,room)
+                .where(room.id.eq(roomId).and(booking.processDate.any().in(dates)))
                 .fetch();
     }
 
