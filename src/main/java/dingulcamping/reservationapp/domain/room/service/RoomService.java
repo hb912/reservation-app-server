@@ -26,7 +26,7 @@ public class RoomService {
     public RoomDetailDto getRoomDetail(Long roomId){
         Optional<Room> findById = roomRepository.findById(roomId);
         if(findById.isEmpty()){
-            throw new NotExistRoomException("존재하지 않는 방입니다.");
+            throw new NotExistRoomException();
         }
         RoomDetailDto roomDetailDto = new RoomDetailDto(findById.get());
         return roomDetailDto;
@@ -40,7 +40,7 @@ public class RoomService {
     public void createRoom(RoomCreateDto roomCreateDto){
         Optional<Room> findOneByName = roomRepository.findOneByName(roomCreateDto.getName());
         if(findOneByName.isPresent()){
-            throw new ExistSameNameRoomException("동일한 이름의 룸이 존재합니다.");
+            throw new ExistSameNameRoomException();
         }
         Room room = new Room(roomCreateDto);
         roomRepository.save(room);

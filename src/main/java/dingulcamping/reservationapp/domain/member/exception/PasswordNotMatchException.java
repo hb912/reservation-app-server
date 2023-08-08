@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.member.exception;
 
-public class PasswordNotMatchException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class PasswordNotMatchException extends CustomException {
     public PasswordNotMatchException() {
-        super();
-    }
-
-    public PasswordNotMatchException(String message) {
-        super(message);
-    }
-
-    public PasswordNotMatchException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public PasswordNotMatchException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.PASSWORD_NOT_MATCH);
     }
 }

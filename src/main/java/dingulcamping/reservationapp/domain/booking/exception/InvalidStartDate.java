@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.booking.exception;
 
-public class InvalidStartDate extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class InvalidStartDate extends CustomException {
     public InvalidStartDate() {
-        super();
-    }
-
-    public InvalidStartDate(String message) {
-        super(message);
-    }
-
-    public InvalidStartDate(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public InvalidStartDate(Throwable cause) {
-        super(cause);
+        super(ErrorCode.INVALID_START_DATE);
     }
 }

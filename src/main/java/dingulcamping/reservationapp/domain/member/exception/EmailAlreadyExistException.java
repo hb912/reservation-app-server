@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.member.exception;
 
-public class EmailAlreadyExistException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class EmailAlreadyExistException extends CustomException {
     public EmailAlreadyExistException() {
-        super();
-    }
-
-    public EmailAlreadyExistException(String message) {
-        super(message);
-    }
-
-    public EmailAlreadyExistException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public EmailAlreadyExistException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.EMAIL_ALREADY_EXIST);
     }
 }

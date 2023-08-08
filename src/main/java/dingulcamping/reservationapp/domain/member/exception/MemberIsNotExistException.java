@@ -1,19 +1,11 @@
 package dingulcamping.reservationapp.domain.member.exception;
 
-public class MemberIsNotExistException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class MemberIsNotExistException extends CustomException {
+
     public MemberIsNotExistException() {
-        super();
-    }
-
-    public MemberIsNotExistException(String message) {
-        super(message);
-    }
-
-    public MemberIsNotExistException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public MemberIsNotExistException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.MEMBER_IS_NOT_EXIST);
     }
 }

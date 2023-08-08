@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.room.exception;
 
-public class NotExistRoomException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.CustomException;
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+
+public class NotExistRoomException extends CustomException {
     public NotExistRoomException() {
-        super();
-    }
-
-    public NotExistRoomException(String message) {
-        super(message);
-    }
-
-    public NotExistRoomException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NotExistRoomException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.ROOM_IS_NOT_EXIST);
     }
 }

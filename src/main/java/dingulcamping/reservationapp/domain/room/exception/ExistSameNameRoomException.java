@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.room.exception;
 
-public class ExistSameNameRoomException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.CustomException;
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+
+public class ExistSameNameRoomException extends CustomException {
     public ExistSameNameRoomException() {
-        super();
-    }
-
-    public ExistSameNameRoomException(String message) {
-        super(message);
-    }
-
-    public ExistSameNameRoomException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ExistSameNameRoomException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.SAME_NAME_ROOM_EXIST);
     }
 }
