@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.booking.exception;
 
-public class InvalidPeopleNumberException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class InvalidPeopleNumberException extends CustomException {
     public InvalidPeopleNumberException() {
-        super();
-    }
-
-    public InvalidPeopleNumberException(String message) {
-        super(message);
-    }
-
-    public InvalidPeopleNumberException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public InvalidPeopleNumberException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.INVALID_PEOPLE_NUMBER);
     }
 }

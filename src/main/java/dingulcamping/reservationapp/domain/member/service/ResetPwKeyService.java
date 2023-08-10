@@ -22,14 +22,14 @@ public class ResetPwKeyService {
         try {
             resetPwKeyRepository.save(resetPwKey);
         }catch(Exception e){
-            throw new RedisPwKeySaveException("redis 저장에 실패했습니다.");
+            throw new RedisPwKeySaveException();
         }
     }
 
     public ResetPwKey findRedisKey(String redisKey){
         Optional<ResetPwKey> findByRedisKey = resetPwKeyRepository.findById(redisKey);
         if(findByRedisKey.isEmpty()){
-            throw new RedisKeyExpiredException("유효기간이 지난 링크입니다.");
+            throw new RedisKeyExpiredException();
         }
         return findByRedisKey.get();
     }

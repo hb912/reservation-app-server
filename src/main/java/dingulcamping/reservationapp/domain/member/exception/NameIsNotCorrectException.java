@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.member.exception;
 
-public class NameIsNotCorrectException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class NameIsNotCorrectException extends CustomException {
     public NameIsNotCorrectException() {
-        super();
-    }
-
-    public NameIsNotCorrectException(String message) {
-        super(message);
-    }
-
-    public NameIsNotCorrectException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NameIsNotCorrectException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.NAME_IS_NOT_CORRECT);
     }
 }

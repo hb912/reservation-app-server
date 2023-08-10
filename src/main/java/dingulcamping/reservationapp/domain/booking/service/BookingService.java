@@ -36,7 +36,6 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
-    private final AuthUtils authUtils;
 
     @Transactional
     public void createBooking(BookingCreateDto bookingCreateDto, Member member){
@@ -47,7 +46,7 @@ public class BookingService {
         int peopleNumber = bookingCreateDto.getPeopleNumber();
         Room room = roomRepository.findById(bookingCreateDto.getRoomId()).orElseThrow(NotExistRoomException::new);
         if(peopleNumber>room.getMaxPeople()||peopleNumber<room.getMinPeople()){
-            throw new InvalidPeopleNumberException("정원이 맞지 않습니다.");
+            throw new InvalidPeopleNumberException();
         }
 
         Booking booking = new Booking(bookingCreateDto,member,room);
@@ -58,10 +57,10 @@ public class BookingService {
     private void checkDates(Date startDate, Date endDate) {
         Date today = new Date(System.currentTimeMillis());
         if(endDate.compareTo(startDate)<=0){
-            throw new InvalidStartDate("종료날짜가 시작날짜보다 작거나 같습니다.");
+            throw new InvalidStartDate();
         }
         if(startDate.before(today)){
-            throw new InvalidStartDate("과거의 예약은 진행할 수 없습니다");
+            throw new InvalidStartDate();
         }
     }
 
@@ -74,7 +73,7 @@ public class BookingService {
     private void isBookingExist(List<Date> processDate, Long roomId) {
         List<Booking> existBooking = bookingRepository.findExistBooking(processDate, roomId);
         if(!existBooking.isEmpty()){
-            throw new DisableBookingDateException("해당 기간에 이미 예약이 존재합니다.");
+            throw new DisableBookingDateException();
         }
     }
 

@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.booking.exception;
 
-public class DisableBookingDateException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class DisableBookingDateException extends CustomException {
     public DisableBookingDateException() {
-        super();
-    }
-
-    public DisableBookingDateException(String message) {
-        super(message);
-    }
-
-    public DisableBookingDateException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public DisableBookingDateException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.DISABLE_BOOKING_DATE);
     }
 }

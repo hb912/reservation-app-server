@@ -79,7 +79,7 @@ public class MemberController {
     public ResponseEntity<String> sendVerifyMail(@Valid @RequestBody FindPwReq findPwReq){
         Member findMember = memberService.getMemberByEmail(findPwReq.getEmail());
         if(!findMember.getName().equals(findPwReq.getName())){
-            throw new NameIsNotCorrectException("이름과 메일이 일치하지 않습니다.");
+            throw new NameIsNotCorrectException();
         }
         String redisKey = UUID.randomUUID().toString();
         ResetPwKey resetPwKey = new ResetPwKey(redisKey, findMember.getId());

@@ -39,7 +39,7 @@ public class MemberService {
     @Transactional(readOnly = false)
     public void register(RegisterReqDto registerReqDto){
         if(memberRepository.findOneByEmail(registerReqDto.getEmail()).isPresent()){
-            throw new EmailAlreadyExistException("이 이메일은 현재 사용중입니다. 다른 이메일을 입력해 주세요.");
+            throw new EmailAlreadyExistException();
         }
 
         Member member=new Member(registerReqDto);
@@ -58,7 +58,7 @@ public class MemberService {
         boolean isPasswordCorrect = bCryptPasswordEncoder.matches(password, member.getPassword());
 
         if(!isPasswordCorrect){
-            throw new PasswordNotMatchException("비밀번호가 일치하지 않습니다. 다시 한번 확인해주세요");
+            throw new PasswordNotMatchException();
         }
 
         String accessToken = getAccessToken(member.getId(), member.getRole());
@@ -76,12 +76,10 @@ public class MemberService {
     }
 
     public String getAccessToken(Long memberId, Role role) {
-        log.info("secretKey={}",secretKey);
         return JwtUtils.createJwt(memberId,role,secretKey,accessExp);
     }
 
     public String getRefreshToken(Long memberId, Role role) {
-        log.info("secretKey={}",secretKey);
         return JwtUtils.createJwt(memberId,role,secretKey,refreshExp);
     }
 
@@ -99,7 +97,7 @@ public class MemberService {
     public Member getMemberByEmail(String email) {
         Optional<Member> findMember = memberRepository.findOneByEmail(email);
         if(findMember.isEmpty()){
-            throw new MemberIsNotExistException("해당 이메일은 가입내역이 없습니다. 다시 한번 확인해주세요");
+            throw new MemberIsNotExistException();
         }
         return findMember.get();
     }
@@ -108,7 +106,7 @@ public class MemberService {
     public void changePassword(Long memberId, String password) {
         Optional<Member> findMember = memberRepository.findById(memberId);
         if(findMember.isEmpty()){
-            throw new MemberIsNotExistException("멤버 정보가 존재하지 않습니다.");
+            throw new MemberIsNotExistException();
         }
         setNewPassword(password,findMember.get());
     }
@@ -117,7 +115,7 @@ public class MemberService {
     public void updateMember(Long memberId, MemberUpdateDto memberUpdateDto) {
         Optional<Member> findMember = memberRepository.findById(memberId);
         if(findMember.isEmpty()){
-            throw new MemberIsNotExistException("유저 정보를 불러오는데 실패했습니다.");
+            throw new MemberIsNotExistException();
         }
         Member member = findMember.get();
         if(memberUpdateDto.getPassword()!=null){
