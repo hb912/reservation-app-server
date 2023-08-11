@@ -1,6 +1,8 @@
 package dingulcamping.reservationapp.domain.review.entity;
 
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
+import dingulcamping.reservationapp.domain.member.entity.Member;
+import dingulcamping.reservationapp.domain.review.dto.ReviewCreateDto;
 import dingulcamping.reservationapp.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,5 +31,9 @@ public class Review extends BaseTimeEntity {
         this.grade = grade;
         this.booking = booking;
         booking.createReview(this);
+    }
+
+    public Review(ReviewCreateDto reviewCreateDto, Booking booking, Member member) {
+        this(reviewCreateDto.getTitle(), reviewCreateDto.getContent(), reviewCreateDto.getGrade(), booking);
     }
 }
