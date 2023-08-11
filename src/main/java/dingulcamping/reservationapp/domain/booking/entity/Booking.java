@@ -74,6 +74,7 @@ public class Booking extends BaseTimeEntity {
         this.member = member;
         this.status=BookingStatus.BOOKING_REQ;
         this.review=null;
+        member.addBooking(this);
     }
 
     public void createReview(Review review) {

@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,5 +121,18 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
                 .selectFrom(booking)
                 .where(booking.status.eq(BOOKING_CONFIRM).and(booking.endDate.after(currentDate)))
                 .fetch();
+    }
+
+    private List<Date> getProcessDate(Date startDate, Date endDate) {
+        Date curDate= startDate;
+        List<Date> processDate=new ArrayList<>();
+        while(curDate.before(endDate)){
+            processDate.add(curDate);
+            Calendar calendar=Calendar.getInstance();
+            calendar.setTime(curDate);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            curDate=new Date(calendar.getTimeInMillis());
+        }
+        return processDate;
     }
 }

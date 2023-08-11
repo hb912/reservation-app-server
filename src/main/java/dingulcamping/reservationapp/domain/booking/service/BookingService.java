@@ -49,8 +49,9 @@ public class BookingService {
             throw new InvalidPeopleNumberException();
         }
 
+        isBookingExist(getProcessDate(bookingCreateDto.getStartDate(),bookingCreateDto.getEndDate()),
+                bookingCreateDto.getRoomId());
         Booking booking = new Booking(bookingCreateDto,member,room);
-        isBookingExist(booking.getProcessDate(), bookingCreateDto.getRoomId());
         bookingRepository.save(booking);
     }
 
