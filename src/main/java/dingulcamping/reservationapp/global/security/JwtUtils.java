@@ -2,10 +2,7 @@ package dingulcamping.reservationapp.global.security;
 
 import dingulcamping.reservationapp.domain.member.entity.Role;
 import dingulcamping.reservationapp.domain.member.repository.RefreshTokenRepository;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +30,7 @@ public class JwtUtils {
     public static boolean isExpired(String token, String secretKey){
        try {
            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration().before(new Date());
-       }catch(ExpiredJwtException e){
+       }catch(ExpiredJwtException | SignatureException e){
            return true;
        }
     }

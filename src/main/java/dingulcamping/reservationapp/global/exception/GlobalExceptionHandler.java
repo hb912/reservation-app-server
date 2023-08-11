@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ Exception.class })
     protected ResponseEntity handleServerException(Exception e) {
-        log.error(e.getMessage());
+        log.error("error Message = {}",e.getMessage());
         return new ResponseEntity(new ErrorDto(INTERNAL_SERVER_ERROR.getStatus(),
                 INTERNAL_SERVER_ERROR.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
