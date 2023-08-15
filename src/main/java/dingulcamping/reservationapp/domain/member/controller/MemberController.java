@@ -9,7 +9,7 @@ import dingulcamping.reservationapp.domain.member.exception.NameIsNotCorrectExce
 import dingulcamping.reservationapp.domain.member.service.MemberService;
 import dingulcamping.reservationapp.domain.member.service.ResetPwKeyService;
 import dingulcamping.reservationapp.global.security.AuthUtils;
-import dingulcamping.reservationapp.global.security.JwtUtils;
+import dingulcamping.reservationapp.global.security.CookieManager;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,12 +17,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+
+import static dingulcamping.reservationapp.global.security.CookieManager.ACCESS_EXP;
+import static dingulcamping.reservationapp.global.security.CookieManager.REFRESH_EXP;
 
 @RestController
 @Validated
@@ -52,21 +54,23 @@ public class MemberController {
         log.info("accessToken={}",tokens.getAccessToken());
         String accessToken="Bearer "+tokens.getAccessToken();
         response.addHeader("authorization", accessToken);
+        CookieManager.addCookie(response, "accessToken", tokens.getAccessToken(), ACCESS_EXP,true);
+        CookieManager.addCookie(response, "userRole", tokens.getRole().toLowerCase(), ACCESS_EXP,false);
         if(tokens.getRefreshToken()!=null) {
-            Cookie cookie = new Cookie("refreshToken", tokens.getRefreshToken());
-            response.addCookie(cookie);
+            CookieManager.addCookie(response, "refreshToken", tokens.getRefreshToken(), REFRESH_EXP,true);
         }
         return ResponseEntity.ok("로그인이 완료되었습니다.");
     }
 
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response){
-        Cookie cookie = new Cookie("refreshToken", "");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        CookieManager.addCookie(response, "refreshToken", "", 0,false);
+        CookieManager.addCookie(response, "accessToken", "", 0,false);
+        CookieManager.addCookie(response, "userRole", "", 0,false);
         response.addHeader("authorization","");
         return ResponseEntity.ok("로그아웃이 완료되었습니다.");
     }
+
 
     @GetMapping("/confirmPW")
     public ResponseEntity<Boolean> confirmPassword(@Valid String password, HttpServletRequest request){
@@ -118,5 +122,4 @@ public class MemberController {
         memberService.deleteMember(memberId);
         return ResponseEntity.ok("탈퇴 성공");
     }
-
 }
