@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RoomInfoDto {
-    private Long id;
+    private Long _id;
     private String name;
     private int price;
     private RoomType roomType;
@@ -20,7 +20,7 @@ public class RoomInfoDto {
 
     @QueryProjection
     public RoomInfoDto(Long id, String name, int price, RoomType roomType, String icon, int maxPeople, int minPeople, MapPosition position) {
-        this.id = id;
+        this._id = id;
         this.name = name;
         this.price = price;
         this.roomType = roomType;

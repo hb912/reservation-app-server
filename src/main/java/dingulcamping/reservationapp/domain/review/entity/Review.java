@@ -19,13 +19,13 @@ public class Review extends BaseTimeEntity {
 
     private String title;
     private String content;
-    private double grade;
+    private Double grade;
 
     @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="booking_id")
     private Booking booking;
 
-    public Review(String title, String content, double grade, Booking booking) {
+    public Review(String title, String content, Double grade, Booking booking) {
         this.title = title;
         this.content = content;
         this.grade = grade;

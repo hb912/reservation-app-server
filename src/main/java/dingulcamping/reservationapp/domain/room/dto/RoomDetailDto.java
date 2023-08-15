@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class RoomDetailDto {
-    private Long id;
+    private Long _id;
     private String name;
     private int price;
     private String content;
@@ -29,7 +29,7 @@ public class RoomDetailDto {
     private MapPosition position;
 
     public RoomDetailDto(Room room){
-        this.id=room.getId();
+        this._id=room.getId();
         this.name=room.getName();
         this.price=room.getPrice();
         this.content=room.getContent();
