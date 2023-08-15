@@ -2,7 +2,11 @@ package dingulcamping.reservationapp.domain.review.repository;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import dingulcamping.reservationapp.domain.review.dto.QReviewInfoDto;
+import dingulcamping.reservationapp.domain.review.dto.ReviewInfoDto;
 import dingulcamping.reservationapp.domain.review.entity.Review;
+import dingulcamping.reservationapp.domain.room.entity.QRoom;
+import dingulcamping.reservationapp.domain.room.entity.Room;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,20 +17,32 @@ import java.util.List;
 import static dingulcamping.reservationapp.domain.booking.entity.QBooking.booking;
 import static dingulcamping.reservationapp.domain.member.entity.QMember.member;
 import static dingulcamping.reservationapp.domain.review.entity.QReview.review;
-import static dingulcamping.reservationapp.domain.room.entity.QRoom.room;
+import static dingulcamping.reservationapp.domain.room.entity.QRoom.*;
 
 @RequiredArgsConstructor
-public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
+public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Review> findByRoomId(Long roomId, Pageable pageable) {
-        List<Review> reviews = queryFactory
-                .selectFrom(review)
+    public Page<ReviewInfoDto> findByRoom(Room roomDto, Pageable pageable) {
+        List<ReviewInfoDto> reviews = queryFactory
+                .select(new QReviewInfoDto(
+                        review.id.as("_id"),
+                        room.id.as("roomId"),
+                        room.name.as("roomName"),
+                        member.id.as("memberId"),
+                        member.name.as("memberName"),
+                        booking.id.as("bookingID"),
+                        review.title,
+                        review.content,
+                        review.grade
+                ))
+                .from(review)
                 .innerJoin(review.booking, booking)
                 .innerJoin(booking.room, room)
-                .where(room.id.eq(roomId))
+                .innerJoin(booking.member, member)
+                .where(room.id.eq(roomDto.getId()))
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory
@@ -34,9 +50,9 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom{
                 .from(review)
                 .innerJoin(review.booking, booking)
                 .innerJoin(booking.room, room)
-                .where(room.id.eq(roomId));
+                .where(room.id.eq(roomDto.getId()));
 
-        return PageableExecutionUtils.getPage(reviews,pageable, ()->countQuery.fetchOne());
+        return PageableExecutionUtils.getPage(reviews, pageable, () -> countQuery.fetchOne());
     }
 
     @Override
