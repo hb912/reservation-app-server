@@ -13,15 +13,18 @@ import static dingulcamping.reservationapp.global.exception.ErrorCode.INTERNAL_S
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({ CustomException.class })
+    @ExceptionHandler({CustomException.class})
     protected ResponseEntity handleCustomException(CustomException ex) {
-        return new ResponseEntity(new ErrorDto(ex.getErrorCode().getStatus(), ex.getErrorCode().getMessage()), HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+        return new ResponseEntity(
+                new ErrorDto(ex.getErrorCode().getStatus(), ex.getErrorCode().getMessage(), "error"),
+                HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
 
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler({Exception.class})
     protected ResponseEntity handleServerException(Exception e) {
-        log.error("error Message = {}",e.getMessage());
-        return new ResponseEntity(new ErrorDto(INTERNAL_SERVER_ERROR.getStatus(),
-                INTERNAL_SERVER_ERROR.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("error Message = {}", e.getMessage());
+        return new ResponseEntity(
+                new ErrorDto(INTERNAL_SERVER_ERROR.getStatus(), INTERNAL_SERVER_ERROR.getMessage(), "error"),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
