@@ -3,7 +3,6 @@ package dingulcamping.reservationapp.domain.room.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dingulcamping.reservationapp.domain.room.dto.QSimpleRoomDto;
 import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
-import dingulcamping.reservationapp.domain.booking.dto.QBookingRoomDto;
 import dingulcamping.reservationapp.domain.room.dto.QRoomInfoDto;
 import dingulcamping.reservationapp.domain.room.dto.RoomInfoDto;
 import lombok.RequiredArgsConstructor;

@@ -1,11 +1,8 @@
 package dingulcamping.reservationapp.domain.booking.controller;
 
-import dingulcamping.reservationapp.domain.booking.dto.BookingCreateDto;
-import dingulcamping.reservationapp.domain.booking.dto.SearchByDateDto;
+import dingulcamping.reservationapp.domain.booking.dto.*;
 import dingulcamping.reservationapp.domain.booking.entity.BookingStatus;
 import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
-import dingulcamping.reservationapp.domain.booking.dto.PageBookingInfoDto;
-import dingulcamping.reservationapp.domain.booking.dto.SearchRoomByDateDto;
 import dingulcamping.reservationapp.domain.booking.service.BookingService;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.global.security.AuthUtils;
@@ -14,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +38,7 @@ public class BookingController {
                                                 HttpServletRequest request){
         Member member = authUtils.getMember();
         bookingService.createBooking(bookingCreateDto,member);
-        return ResponseEntity.ok("생성완료");
+        return new ResponseEntity<>("생성 완료", HttpStatus.CREATED);
     }
 
     @GetMapping("/user")
@@ -63,7 +62,7 @@ public class BookingController {
     }
 
     @GetMapping("/confirm")
-    public ResponseEntity<String> confirmBooking(@RequestBody SearchByDateDto searchByDateDto){
+    public ResponseEntity<String> confirmBooking(@ModelAttribute SearchByDateDto searchByDateDto){
         bookingService.confirmBooking(searchByDateDto);
         return ResponseEntity.ok("확인 완료");
     }
@@ -75,7 +74,7 @@ public class BookingController {
     }
 
     @PatchMapping("/review")
-    public ResponseEntity<String> addReview(@RequestBody Long bookingID){
+    public ResponseEntity<String> addReview(@RequestBody BookingIdDto bookingID){
         return ResponseEntity.ok("리뷰 작성 완료");
     }
 

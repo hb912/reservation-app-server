@@ -26,9 +26,12 @@ public enum ErrorCode {
     DISABLE_BOOKING_DATE(400,"해당 기간에 이미 예약이 존재합니다."),
     INVALID_PEOPLE_NUMBER(400,"정원이 맞지 않습니다."),
     INVALID_START_DATE(400,"날짜가 유효하지 않습니다."),
-    NOT_EXIST_BOOKING(404,"해당 예약을 찾을 수 없습니다.");
+    NOT_EXIST_BOOKING(404,"해당 예약을 찾을 수 없습니다."),
 
     //REVIEW
+    REVIEW_IS_EXIST(400,"이미 리뷰가 작성된 예약입니다."),
+    INVALID_MEMBER(400, "리뷰 작성 권한이 없습니다."),
+    NOT_EXIST_REVIEW(404, "해당 리뷰를 찾을 수 없습니다.");
 
     private final int status;
     private final String message;

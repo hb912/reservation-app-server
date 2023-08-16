@@ -44,13 +44,14 @@ public class BookingService {
         checkDates(startDate,endDate);
 
         int peopleNumber = bookingCreateDto.getPeopleNumber();
-        Room room = roomRepository.findById(bookingCreateDto.getRoomId()).orElseThrow(NotExistRoomException::new);
+        Room room = roomRepository.findById(bookingCreateDto.getRoomID()).orElseThrow(NotExistRoomException::new);
         if(peopleNumber>room.getMaxPeople()||peopleNumber<room.getMinPeople()){
             throw new InvalidPeopleNumberException();
         }
 
+        isBookingExist(getProcessDate(bookingCreateDto.getStartDate(),bookingCreateDto.getEndDate()),
+                bookingCreateDto.getRoomID());
         Booking booking = new Booking(bookingCreateDto,member,room);
-        isBookingExist(booking.getProcessDate(), bookingCreateDto.getRoomId());
         bookingRepository.save(booking);
     }
 
@@ -106,8 +107,8 @@ public class BookingService {
     }
 
     public void confirmBooking(SearchByDateDto searchByDateDto){
-        Date startDate = new Date(searchByDateDto.getStartDate().getTime());
-        Date endDate = new Date(searchByDateDto.getEndDate().getTime());
+        Date startDate = searchByDateDto.convertStartDate();
+        Date endDate = searchByDateDto.convertEndDate();
         List<Date> processDate = getProcessDate(startDate, endDate);
 
         checkDates(startDate,endDate);

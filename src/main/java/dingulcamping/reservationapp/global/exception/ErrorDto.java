@@ -9,5 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ErrorDto {
     private int status;
-    private String message;
+    private String reason;
+    private String result;
 }

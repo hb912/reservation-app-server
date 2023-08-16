@@ -18,8 +18,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class BookingCreateDto {
 
     @NotNull
@@ -38,5 +37,5 @@ public class BookingCreateDto {
     private String requirements;
 
     @NotNull
-    private Long roomId;
+    private Long roomID;
 }
