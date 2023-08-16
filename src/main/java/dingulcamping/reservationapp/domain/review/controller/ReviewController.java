@@ -46,4 +46,12 @@ public class ReviewController {
         ReviewInfoDto result=reviewService.getBookingReview(bookingID);
         return ResponseEntity.ok(result);
     }
+
+    @PatchMapping("/{reviewID}")
+    public ResponseEntity<String> updateReview(@PathVariable Long reviewID,
+                                               @RequestBody ReviewUpdateDto reviewUpdateDto){
+        reviewService.updateReview(reviewID,reviewUpdateDto);
+        log.info("content={}",reviewUpdateDto.getContent());
+        return ResponseEntity.ok("수정 완료");
+    }
 }
