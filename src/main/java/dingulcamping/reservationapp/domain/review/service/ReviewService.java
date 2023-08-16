@@ -48,4 +48,9 @@ public class ReviewService {
         Room room = roomRepository.findById(roomID).orElseThrow(NotExistBookingException::new);
         return reviewRepository.findByRoom(room,pageable);
     }
+
+    public ReviewInfoDto getBookingReview(Long bookingID) {
+        Booking booking = bookingRepository.findById(bookingID).orElseThrow(NotExistBookingException::new);
+        return reviewRepository.findByBooking(booking).orElseThrow(NotExistReviewException::new);
+    }
 }
