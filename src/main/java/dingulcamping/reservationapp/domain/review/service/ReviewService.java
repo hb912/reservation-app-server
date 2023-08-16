@@ -53,4 +53,11 @@ public class ReviewService {
         Booking booking = bookingRepository.findById(bookingID).orElseThrow(NotExistBookingException::new);
         return reviewRepository.findByBooking(booking).orElseThrow(NotExistReviewException::new);
     }
+
+    @Transactional
+    public void updateReview(Long reviewID, ReviewUpdateDto reviewUpdateDto) {
+        Review review = reviewRepository.findById(reviewID).orElseThrow(NotExistReviewException::new);
+        review.updateReview(reviewUpdateDto);
+    }
+
 }
