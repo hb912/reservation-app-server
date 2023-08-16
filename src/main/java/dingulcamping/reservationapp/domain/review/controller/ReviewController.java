@@ -39,4 +39,11 @@ public class ReviewController {
         log.info("result={}",results);
         return ResponseEntity.ok(results);
     }
+
+    @GetMapping("/booking")
+    public ResponseEntity<ReviewInfoDto> findByBookingId(Long bookingID){
+        log.info("bookingid={}",bookingID);
+        ReviewInfoDto result=reviewService.getBookingReview(bookingID);
+        return ResponseEntity.ok(result);
+    }
 }
