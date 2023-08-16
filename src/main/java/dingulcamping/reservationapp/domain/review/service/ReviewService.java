@@ -6,8 +6,10 @@ import dingulcamping.reservationapp.domain.booking.repository.BookingRepository;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.review.dto.ReviewCreateDto;
 import dingulcamping.reservationapp.domain.review.dto.ReviewInfoDto;
+import dingulcamping.reservationapp.domain.review.dto.ReviewUpdateDto;
 import dingulcamping.reservationapp.domain.review.entity.Review;
 import dingulcamping.reservationapp.domain.review.exception.InvalidMemberException;
+import dingulcamping.reservationapp.domain.review.exception.NotExistReviewException;
 import dingulcamping.reservationapp.domain.review.exception.ReviewIsExistException;
 import dingulcamping.reservationapp.domain.review.repository.ReviewRepository;
 import dingulcamping.reservationapp.domain.room.entity.Room;
@@ -60,4 +62,11 @@ public class ReviewService {
         review.updateReview(reviewUpdateDto);
     }
 
+    @Transactional
+    public void deleteReview(Long reviewID) {
+        Review review = reviewRepository.findById(reviewID).orElseThrow(NotExistReviewException::new);
+        Booking booking = review.getBooking();
+        reviewRepository.deleteById(reviewID);
+        booking.deleteReview();
+    }
 }

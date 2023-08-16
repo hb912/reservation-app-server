@@ -3,11 +3,13 @@ package dingulcamping.reservationapp.domain.review.controller;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.review.dto.ReviewCreateDto;
 import dingulcamping.reservationapp.domain.review.dto.ReviewInfoDto;
+import dingulcamping.reservationapp.domain.review.dto.ReviewUpdateDto;
 import dingulcamping.reservationapp.domain.review.service.ReviewService;
 import dingulcamping.reservationapp.global.security.AuthUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -53,5 +55,11 @@ public class ReviewController {
         reviewService.updateReview(reviewID,reviewUpdateDto);
         log.info("content={}",reviewUpdateDto.getContent());
         return ResponseEntity.ok("수정 완료");
+    }
+
+    @DeleteMapping("/{reviewID}")
+    public ResponseEntity<String> deleteReview(@PathVariable Long reviewID){
+        reviewService.deleteReview(reviewID);
+        return ResponseEntity.ok("삭제 완료");
     }
 }
