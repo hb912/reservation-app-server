@@ -35,6 +35,7 @@ public class MemberService {
     private String secretKey;
     private Long accessExp=30*60*1000l;
     private Long refreshExp=24*60*60*1000l;
+    private Long refreshExp=31*24*60*60*1000l;
 
     @Transactional(readOnly = false)
     public void register(RegisterReqDto registerReqDto){

@@ -6,11 +6,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieManager {
 
-    public final static int ACCESS_EXP=30 * 60 * 1000;
-    public final static int REFRESH_EXP=1000 * 60 * 60 * 24 * 14;
+    public final static int ACCESS_EXP = 30 * 60;
+    public final static int REFRESH_EXP = 31 * 24 * 60 * 60;
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge,
-                                  Boolean httpsOnly) {
+                                 Boolean httpsOnly) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
