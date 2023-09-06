@@ -108,11 +108,6 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom {
     }
 
     @Override
-    public List<Booking> findRequests() {
-        Date currentDate = new Date(System.currentTimeMillis());
-        return queryFactory
-                .selectFrom(booking)
-                .where(booking.status.eq(BOOKING_REQ).and(booking.endDate.after(currentDate)))
     public Page<BookingInfoDto> findConfirms(String name, Date date, Pageable pageable) {
         List<Date> dates= new ArrayList<>();
         dates.add(date);
@@ -148,8 +143,38 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom {
     }
 
     @Override
+    public Page<BookingInfoDto> findRequests(String name, Pageable pageable) {
         Date currentDate = new Date(System.currentTimeMillis());
+        List<BookingInfoDto> content = queryFactory
+                .select(new QBookingInfoDto(
+                        booking.id.as("_id"),
+                        booking.price,
+                        booking.startDate,
+                        booking.endDate,
+                        booking.peopleNumber,
+                        booking.requirements,
+                        booking.status,
+                        room.id.as("roomId"),
+                        room.name.as("roomName"),
+                        member.name.as("memberName"),
+                        review))
+                .from(booking)
+                .from(booking)
+                .leftJoin(booking.member, member)
+                .leftJoin(booking.room, room)
+                .leftJoin(booking.review, review)
+                .where(statusReq(),getAfter(currentDate),nameEq(name))
+                .orderBy(booking.createdDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(booking.count())
+                .from(booking)
+                .where(statusReq(),getAfter(currentDate));
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.fetchOne());
     }
 
     private List<Date> getProcessDate(Date startDate, Date endDate) {
@@ -175,6 +200,10 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom {
 
     private BooleanExpression statusBooking(){
         return booking.status.in(BOOKING_CONFIRM, BOOKING_REQ);
+    }
+
+    private BooleanExpression statusReq(){
+        return booking.status.in(BOOKING_REQ, CANCEL_REQ);
     }
 
     private BooleanExpression nameEq(String name) {
