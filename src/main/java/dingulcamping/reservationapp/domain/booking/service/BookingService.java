@@ -38,34 +38,34 @@ public class BookingService {
     private final RoomRepository roomRepository;
 
     @Transactional
-    public void createBooking(BookingCreateDto bookingCreateDto, Member member){
+    public void createBooking(BookingCreateDto bookingCreateDto, Member member) {
         Date startDate = bookingCreateDto.getStartDate();
         Date endDate = bookingCreateDto.getEndDate();
-        checkDates(startDate,endDate);
+        checkDates(startDate, endDate);
 
         int peopleNumber = bookingCreateDto.getPeopleNumber();
         Room room = roomRepository.findById(bookingCreateDto.getRoomID()).orElseThrow(NotExistRoomException::new);
-        if(peopleNumber>room.getMaxPeople()||peopleNumber<room.getMinPeople()){
+        if (peopleNumber > room.getMaxPeople() || peopleNumber < room.getMinPeople()) {
             throw new InvalidPeopleNumberException();
         }
 
-        isBookingExist(getProcessDate(bookingCreateDto.getStartDate(),bookingCreateDto.getEndDate()),
+        isBookingExist(getProcessDate(bookingCreateDto.getStartDate(), bookingCreateDto.getEndDate()),
                 bookingCreateDto.getRoomID());
-        Booking booking = new Booking(bookingCreateDto,member,room);
+        Booking booking = new Booking(bookingCreateDto, member, room);
         bookingRepository.save(booking);
     }
 
     private void checkDates(Date startDate, Date endDate) {
         Date today = new Date(System.currentTimeMillis());
-        if(endDate.compareTo(startDate)<=0){
+        if (endDate.compareTo(startDate) <= 0) {
             throw new InvalidStartDate();
         }
-        if(startDate.before(today)){
+        if (startDate.before(today)) {
             throw new InvalidStartDate();
         }
     }
 
-    public PageBookingInfoDto getByUserId(Long memberId, Pageable pageable){
+    public PageBookingInfoDto getByUserId(Long memberId, Pageable pageable) {
 
         Page<BookingInfoDto> bookings = bookingRepository.findAllByMemberId(memberId, pageable);
         return new PageBookingInfoDto(bookings.getContent(), bookings.getTotalPages());
@@ -73,7 +73,7 @@ public class BookingService {
 
     private void isBookingExist(List<Date> processDate, Long roomId) {
         List<Booking> existBooking = bookingRepository.findExistBooking(processDate, roomId);
-        if(!existBooking.isEmpty()){
+        if (!existBooking.isEmpty()) {
             throw new DisableBookingDateException();
         }
     }
@@ -90,14 +90,14 @@ public class BookingService {
     }
 
     private List<Date> getProcessDate(Date startDate, Date endDate) {
-        List<Date> processDate=new ArrayList<>();
-        Date curDate= startDate;
-        while(curDate.before(endDate)){
+        List<Date> processDate = new ArrayList<>();
+        Date curDate = startDate;
+        while (curDate.before(endDate)) {
             processDate.add(curDate);
-            Calendar calendar=Calendar.getInstance();
+            Calendar calendar = Calendar.getInstance();
             calendar.setTime(curDate);
             calendar.add(Calendar.DAY_OF_MONTH, 1);
-            curDate=new Date(calendar.getTimeInMillis());
+            curDate = new Date(calendar.getTimeInMillis());
         }
         return processDate;
     }
@@ -106,19 +106,29 @@ public class BookingService {
         return bookingRepository.findDisableDatesByRoomId(roomID);
     }
 
-    public void confirmBooking(SearchByDateDto searchByDateDto){
+    public void confirmBooking(SearchByDateDto searchByDateDto) {
         Date startDate = searchByDateDto.convertStartDate();
         Date endDate = searchByDateDto.convertEndDate();
         List<Date> processDate = getProcessDate(startDate, endDate);
 
-        checkDates(startDate,endDate);
+        checkDates(startDate, endDate);
         isBookingExist(processDate, searchByDateDto.getRoomID());
     }
 
     @Transactional
     public void changeStatus(Long bookingID, BookingStatus bookingStatus) {
         Booking booking = bookingRepository.findById(bookingID).orElseThrow(NotExistBookingException::new);
-        checkDates(booking.getStartDate(),booking.getEndDate());
+        checkDates(booking.getStartDate(), booking.getEndDate());
         booking.changeBookingStatus(bookingStatus);
     }
+
+
+    public Page<BookingInfoDto> getBooks(String name, Date date, Pageable pageable) {
+        return bookingRepository.findConfirms(name, date, pageable);
+    }
+
+    public Page<BookingInfoDto> getRequests(String name, Pageable pageable) {
+        return bookingRepository.findRequests(name, pageable);
+    }
+
 }
