@@ -40,4 +40,17 @@ public class AdminController {
         return ResponseEntity.ok("삭제 완료");
     }
 
+    @GetMapping("/books")
+    public ResponseEntity<Page<BookingInfoDto>> getAllBooks(@ModelAttribute BookListReq bookListReq, Pageable pageable){
+        if(bookListReq.getRequest()){
+            Page<BookingInfoDto> bookLists = bookingService.getRequests(bookListReq.getName(),pageable);
+            return ResponseEntity.ok(bookLists);
+        }else{
+            Page<BookingInfoDto> bookLists = bookingService.getBooks(bookListReq.getName(),
+                    new Date(bookListReq.getDate().getTime()),
+                    pageable);
+            return ResponseEntity.ok(bookLists);
+        }
+    }
+
 }
