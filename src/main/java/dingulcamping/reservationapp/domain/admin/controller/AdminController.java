@@ -34,4 +34,10 @@ public class AdminController {
         return ResponseEntity.ok(memberList);
     }
 
+    @DeleteMapping("/user")
+    public ResponseEntity<String> deleteMember(@RequestBody UserIdDto userIdDto){
+        memberService.deleteMember(userIdDto.getUserId());
+        return ResponseEntity.ok("삭제 완료");
+    }
+
 }
