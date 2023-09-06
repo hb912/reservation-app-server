@@ -1,5 +1,6 @@
 package dingulcamping.reservationapp.domain.booking.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dingulcamping.reservationapp.domain.booking.dto.BookingInfoDto;
@@ -8,6 +9,7 @@ import dingulcamping.reservationapp.domain.booking.entity.Booking;
 import dingulcamping.reservationapp.domain.room.dto.QSimpleRoomDto;
 import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -18,15 +20,15 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.BOOKING_CONFIRM;
-import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.BOOKING_REQ;
+import static dingulcamping.reservationapp.domain.booking.entity.BookingStatus.*;
 import static dingulcamping.reservationapp.domain.booking.entity.QBooking.booking;
 import static dingulcamping.reservationapp.domain.member.entity.QMember.member;
 import static dingulcamping.reservationapp.domain.review.entity.QReview.review;
 import static dingulcamping.reservationapp.domain.room.entity.QRoom.room;
 
+@Slf4j
 @RequiredArgsConstructor
-public class BookingRepositoryImpl implements BookingRepositoryCustom{
+public class BookingRepositoryImpl implements BookingRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
@@ -49,7 +51,7 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
                 .from(booking)
                 .leftJoin(booking.member, member)
                 .leftJoin(booking.room, room)
-                .leftJoin(booking.review,review)
+                .leftJoin(booking.review, review)
                 .where(member.id.eq(memberId))
                 .orderBy(booking.createdDate.desc())
                 .offset(pageable.getOffset())
@@ -62,7 +64,7 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
                 .leftJoin(booking.member, member)
                 .where(member.id.eq(memberId));
 
-        return PageableExecutionUtils.getPage(content,pageable, ()->countQuery.fetchOne());
+        return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.fetchOne());
     }
 
     @Override
@@ -72,7 +74,7 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
                 .select(booking)
                 .from(booking)
                 .leftJoin(booking.room, room)
-                .where(room.id.eq(roomId).and(booking.status.eq(BOOKING_CONFIRM)).and(booking.endDate.after(currentDate)))
+                .where(room.id.eq(roomId).and(booking.status.in(BOOKING_CONFIRM,BOOKING_REQ)).and(getAfter(currentDate)))
                 .fetch()
                 .stream()
                 .map(booking -> booking.getProcessDate())
@@ -91,8 +93,8 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
                 ))
                 .distinct()
                 .from(booking)
-                .leftJoin(booking.room,room)
-                .where(booking.status.eq(BOOKING_CONFIRM).and(booking.processDate.any().in(dates)))
+                .leftJoin(booking.room, room)
+                .where(statusBooking(), getDates(dates))
                 .fetch();
     }
 
@@ -100,8 +102,8 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
     public List<Booking> findExistBooking(List<Date> dates, Long roomId) {
         return queryFactory
                 .selectFrom(booking)
-                .leftJoin(booking.room,room)
-                .where(room.id.eq(roomId).and(booking.processDate.any().in(dates)))
+                .leftJoin(booking.room, room)
+                .where(room.id.eq(roomId).and(getDates(dates)))
                 .fetch();
     }
 
@@ -111,28 +113,79 @@ public class BookingRepositoryImpl implements BookingRepositoryCustom{
         return queryFactory
                 .selectFrom(booking)
                 .where(booking.status.eq(BOOKING_REQ).and(booking.endDate.after(currentDate)))
+    public Page<BookingInfoDto> findConfirms(String name, Date date, Pageable pageable) {
+        List<Date> dates= new ArrayList<>();
+        dates.add(date);
+        List<BookingInfoDto> content = queryFactory
+                .select(new QBookingInfoDto(
+                        booking.id.as("_id"),
+                        booking.price,
+                        booking.startDate,
+                        booking.endDate,
+                        booking.peopleNumber,
+                        booking.requirements,
+                        booking.status,
+                        room.id.as("roomId"),
+                        room.name.as("roomName"),
+                        member.name.as("memberName"),
+                        review))
+                .from(booking)
+                .leftJoin(booking.member, member)
+                .leftJoin(booking.room, room)
+                .leftJoin(booking.review, review)
+                .where(statusConfirm(),getDates(dates),nameEq(name))
+                .orderBy(booking.createdDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(booking.count())
+                .from(booking)
+                .where(statusConfirm(),getDates(dates),nameEq(name));
+
+        return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.fetchOne());
     }
 
     @Override
-    public List<Booking> findConfirms() {
         Date currentDate = new Date(System.currentTimeMillis());
-        return queryFactory
-                .selectFrom(booking)
-                .where(booking.status.eq(BOOKING_CONFIRM).and(booking.endDate.after(currentDate)))
                 .fetch();
     }
 
     private List<Date> getProcessDate(Date startDate, Date endDate) {
-        Date curDate= startDate;
-        List<Date> processDate=new ArrayList<>();
-        while(curDate.before(endDate)){
+        Date curDate = startDate;
+        List<Date> processDate = new ArrayList<>();
+        while (curDate.before(endDate)) {
             processDate.add(curDate);
-            Calendar calendar=Calendar.getInstance();
+            Calendar calendar = Calendar.getInstance();
             calendar.setTime(curDate);
             calendar.add(Calendar.DAY_OF_MONTH, 1);
-            curDate=new Date(calendar.getTimeInMillis());
+            curDate = new Date(calendar.getTimeInMillis());
         }
         return processDate;
     }
+
+    private static BooleanExpression getDates(List<Date> dates) {
+        return booking.processDate.any().in(dates);
+    }
+
+    private BooleanExpression statusConfirm(){
+        return booking.status.in(BOOKING_CONFIRM, BOOKING_EXP);
+    }
+
+    private BooleanExpression statusBooking(){
+        return booking.status.in(BOOKING_CONFIRM, BOOKING_REQ);
+    }
+
+    private BooleanExpression nameEq(String name) {
+        if(name.isBlank()){
+            return null;
+        }
+        return member.name.eq(name);
+    }
+
+    private BooleanExpression getAfter(Date currentDate) {
+        return booking.endDate.after(currentDate);
+    }
+
 }

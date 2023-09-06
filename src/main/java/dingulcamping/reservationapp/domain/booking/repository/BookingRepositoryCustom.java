@@ -14,6 +14,6 @@ public interface BookingRepositoryCustom {
     List<Date> findDisableDatesByRoomId(Long roomId);
     List<SimpleRoomDto> findDisableRoomsByDate(List<Date> dates);
     List<Booking> findRequests();
-    List<Booking> findConfirms();
+    Page<BookingInfoDto> findConfirms(String name, Date date, Pageable pageable);
     List<Booking> findExistBooking(List<Date> processDates, Long roomId);
 }
