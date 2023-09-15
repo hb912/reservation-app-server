@@ -33,4 +33,16 @@ public class KakaoUtils {
                 .blockFirst();
     }
 
+    public KakaoUserInfo getUserInfo(String token){
+        String uri="https://kapi.kakao.com/v2/user/me";
+        System.out.println("uri = " + uri);
+        System.out.println("token = " + token);
+        String bearerToken="Bearer "+token.toString();
+        return webClient.get()
+                .uri(uri)
+                .header("Authorization", bearerToken)
+                .retrieve()
+                .bodyToFlux(KakaoUserInfo.class)
+                .blockFirst();
+    }
 }
