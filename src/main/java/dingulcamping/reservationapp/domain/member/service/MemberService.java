@@ -4,6 +4,8 @@ import dingulcamping.reservationapp.domain.member.dto.LoginDto;
 import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
 import dingulcamping.reservationapp.domain.member.dto.MemberUpdateDto;
 import dingulcamping.reservationapp.domain.member.dto.TokenDto;
+import dingulcamping.reservationapp.domain.member.dto.*;
+import dingulcamping.reservationapp.domain.member.dto.kakao.KakaoUserInfo;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.member.entity.RefreshToken;
 import dingulcamping.reservationapp.domain.member.entity.Role;
@@ -129,5 +131,28 @@ public class MemberService {
     @Transactional(readOnly = false)
     public void deleteMember(Long memberId){
         memberRepository.deleteById(memberId);
+    }
+    @Transactional
+    public TokenDto kakaoLogin(KakaoUserInfo userInfo) {
+        Member member=null;
+        Optional<Member> findById = memberRepository.findOneByEmail("kakao_" + userInfo.getId());
+        if(findById.isEmpty()){
+            member = new Member(userInfo);
+            memberRepository.save(member);
+            log.info("회원가입완료");
+        }else{
+            member=findById.get();
+        }
+
+        String accessToken = getAccessToken(member.getId(), member.getRole());
+        Role role = member.getRole();
+        TokenDto tokenDto = new TokenDto(accessToken, role);
+
+        String token = getRefreshToken(member.getId(), member.getRole());
+        RefreshToken refreshToken = new RefreshToken(token, member.getId());
+        refreshTokenRepository.save(refreshToken);
+        tokenDto.setRefreshToken(token);
+
+        return tokenDto;
     }
 }

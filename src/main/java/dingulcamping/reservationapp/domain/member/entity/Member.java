@@ -1,8 +1,9 @@
 package dingulcamping.reservationapp.domain.member.entity;
 
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
-import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
 import dingulcamping.reservationapp.domain.member.dto.MemberUpdateDto;
+import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
+import dingulcamping.reservationapp.domain.member.dto.kakao.KakaoUserInfo;
 import dingulcamping.reservationapp.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -60,6 +61,13 @@ public class Member extends BaseTimeEntity {
         this.phoneNumber=registerReq.getPhoneNumber();
         this.role= USER;
         this.provider=null;
+    }
+
+    public Member(KakaoUserInfo userInfo){
+        this.email="kakao_"+userInfo.getId();
+        this.name=userInfo.getProperties().getNickname();
+        this.role=USER;
+        setProvider("kakao");
     }
 
     public void setProvider(String provider){
