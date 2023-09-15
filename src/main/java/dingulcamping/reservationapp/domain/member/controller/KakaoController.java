@@ -26,6 +26,8 @@ public class KakaoController {
     @Value("${kakao.key}")
     private String REST_API_KEY;
     private static final String REDIRECT_URI = "http://localhost:8080/api/oauth";
+    private final KakaoUtils kakaoUtils;
+    private final MemberService memberService;
 
     @GetMapping("/api/kakao")
     public RedirectView kakaoLoginRequest(RedirectAttributes attributes) {
@@ -34,4 +36,29 @@ public class KakaoController {
         return new RedirectView(redirectURL);
     }
 
+    @GetMapping("/api/oauth")
+    public RedirectView kakaoLogin(@RequestParam String code, HttpServletResponse response){
+        //인가코드로 토큰 받기
+        KakaoTokenDto token = kakaoUtils.getToken(code);
+        log.info("accessToken={}",token.getAccess_token());
+        log.info("refreshToken={}",token.getRefresh_token());
+
+
+        //토큰으로 사용자 정보 받아오기
+        KakaoUserInfo userInfo = kakaoUtils.getUserInfo(token.getAccess_token());
+        log.info("userInfo={}",userInfo);
+
+        TokenDto tokens = memberService.kakaoLogin(userInfo);
+
+        String accessToken="Bearer "+tokens.getAccessToken();
+        response.addHeader("authorization", accessToken);
+        CookieManager.addCookie(response, "accessToken", tokens.getAccessToken(), ACCESS_EXP,true);
+        CookieManager.addCookie(response, "userRole", tokens.getRole().toLowerCase(), ACCESS_EXP,false);
+        if(tokens.getRefreshToken()!=null) {
+            CookieManager.addCookie(response, "refreshToken", tokens.getRefreshToken(), REFRESH_EXP,true);
+        }
+
+        //로그인완료
+        return new RedirectView("http://localhost:3000");
+    }
 }
