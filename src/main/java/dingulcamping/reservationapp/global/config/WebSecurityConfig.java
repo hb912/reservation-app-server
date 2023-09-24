@@ -39,6 +39,8 @@ public class WebSecurityConfig{
                 .authorizeHttpRequests((authz)-> authz
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/newPassword").permitAll()
+                        .requestMatchers("/api/kakao").permitAll()
+                        .requestMatchers("/api/oauth").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/register").permitAll()
                         .requestMatchers(HttpMethod.PATCH,"/api/password").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/room/**").permitAll()
