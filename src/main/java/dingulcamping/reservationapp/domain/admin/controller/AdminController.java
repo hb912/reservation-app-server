@@ -61,4 +61,10 @@ public class AdminController {
         return ResponseEntity.ok("예약 확정 완료");
     }
 
+    @DeleteMapping("/book")
+    public ResponseEntity<String> cancelBook(@RequestBody BookingIdDto bookingIdDto){
+        bookingService.changeStatus(bookingIdDto.getBookingID(), BookingStatus.BOOKING_CANCEL);
+        return ResponseEntity.ok("취소완료");
+    }
+    
 }
