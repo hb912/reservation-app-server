@@ -13,7 +13,7 @@ public interface BookingRepositoryCustom {
     Page<BookingInfoDto> findAllByMemberId(Long memberId, Pageable pageable);
     List<Date> findDisableDatesByRoomId(Long roomId);
     List<SimpleRoomDto> findDisableRoomsByDate(List<Date> dates);
-    List<Booking> findRequests();
-    List<Booking> findConfirms();
+    Page<BookingInfoDto> findRequests(String name, Pageable pageable);
+    Page<BookingInfoDto> findConfirms(String name, Date date, Pageable pageable);
     List<Booking> findExistBooking(List<Date> processDates, Long roomId);
 }

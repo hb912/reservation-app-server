@@ -1,20 +1,20 @@
 package dingulcamping.reservationapp.domain.member.service;
 
-import dingulcamping.reservationapp.domain.member.dto.LoginDto;
-import dingulcamping.reservationapp.domain.member.dto.RegisterReqDto;
-import dingulcamping.reservationapp.domain.member.dto.MemberUpdateDto;
-import dingulcamping.reservationapp.domain.member.dto.TokenDto;
+import dingulcamping.reservationapp.domain.member.dto.*;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.member.entity.RefreshToken;
 import dingulcamping.reservationapp.domain.member.entity.Role;
-import dingulcamping.reservationapp.domain.member.exception.*;
+import dingulcamping.reservationapp.domain.member.exception.EmailAlreadyExistException;
+import dingulcamping.reservationapp.domain.member.exception.MemberIsNotExistException;
+import dingulcamping.reservationapp.domain.member.exception.PasswordNotMatchException;
 import dingulcamping.reservationapp.domain.member.repository.MemberRepository;
 import dingulcamping.reservationapp.domain.member.repository.RefreshTokenRepository;
-import dingulcamping.reservationapp.domain.member.repository.ResetPwKeyRepository;
 import dingulcamping.reservationapp.global.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +29,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final ResetPwKeyRepository resetPwKeyRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Value("${jwt.secret}")
     private String secretKey;
     private Long accessExp=30*60*1000l;
-    private Long refreshExp=24*60*60*1000l;
+    private Long refreshExp=31*24*60*60*1000l;
 
     @Transactional(readOnly = false)
     public void register(RegisterReqDto registerReqDto){
@@ -127,5 +126,9 @@ public class MemberService {
     @Transactional(readOnly = false)
     public void deleteMember(Long memberId){
         memberRepository.deleteById(memberId);
+    }
+
+    public Page<MemberInfoDto> getAllByName(String name,Pageable pageable){
+        return memberRepository.findAllByName(name,pageable);
     }
 }
