@@ -1,7 +1,9 @@
 package dingulcamping.reservationapp.domain.admin.controller;
 
 import dingulcamping.reservationapp.domain.admin.dto.BookListReq;
+import dingulcamping.reservationapp.domain.booking.dto.BookingIdDto;
 import dingulcamping.reservationapp.domain.booking.dto.BookingInfoDto;
+import dingulcamping.reservationapp.domain.booking.entity.BookingStatus;
 import dingulcamping.reservationapp.domain.booking.service.BookingService;
 import dingulcamping.reservationapp.domain.member.dto.MemberIdDto;
 import dingulcamping.reservationapp.domain.member.dto.MemberInfoDto;
@@ -51,6 +53,12 @@ public class AdminController {
                     pageable);
             return ResponseEntity.ok(bookLists);
         }
+    }
+
+    @PatchMapping("/book")
+    public ResponseEntity<String> confirmBook(@RequestBody BookingIdDto bookingIdDto){
+        bookingService.changeStatus(bookingIdDto.getBookingID(),BookingStatus.BOOKING_CONFIRM);
+        return ResponseEntity.ok("예약 확정 완료");
     }
 
 }
