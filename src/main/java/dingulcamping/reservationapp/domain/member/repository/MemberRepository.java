@@ -8,8 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
-    List<Member> findAllByName(String name);
+public interface MemberRepository extends JpaRepository<Member, Long>,MemberRepositoryCustom {
     Optional<Member> findOneByNameAndEmail(String name, String email);
     Optional<Member> findOneByEmail(String email);
     Optional<Member> findOneByProviderAndEmail(String provider, String email);

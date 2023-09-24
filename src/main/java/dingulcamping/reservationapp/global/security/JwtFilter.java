@@ -18,7 +18,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
+
+import static dingulcamping.reservationapp.global.security.CookieManager.ACCESS_EXP;
+import static dingulcamping.reservationapp.global.security.CookieManager.getCookie;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -30,11 +33,10 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        final String authorization=request.getHeader(HttpHeaders.AUTHORIZATION);
+        String accessToken = getCookie(request, "accessToken");
+        log.info("accessToken : {}", accessToken);
 
-        log.info("authorization : {}", authorization);
-
-        if(authorization==null || !authorization.startsWith("Bearer ")){
+        if(accessToken==null){
             //인증이 안되었을때 block
             log.error("authorization is null");
             filterChain.doFilter(request,response);
@@ -44,14 +46,10 @@ public class JwtFilter extends OncePerRequestFilter {
         Long memberId=null;
         Role role=null;
 
-        //Token 꺼내기
-        String token=authorization.split(" ")[1];
-        log.info("token={}",token);
-        log.info("secretKey={}",secretKey);
-//        //Token Expired 되었는지 여부
-        if(JwtUtils.isExpired(token,secretKey)){
+        //Token Expired 되었는지 여부
+        if(JwtUtils.isExpired(accessToken,secretKey)){
             log.error("Access Token이 만료되었습니다");
-            String refreshToken = getRefreshToken(request);
+            String refreshToken = getCookie(request,"refreshToken");
             if(refreshToken==null){
                 filterChain.doFilter(request,response);
                 return;
@@ -65,17 +63,18 @@ public class JwtFilter extends OncePerRequestFilter {
             role=Role.valueOf(JwtUtils.getRole(refreshToken,secretKey));
             String newAccessToken = JwtUtils.createJwt(memberId, role, secretKey, 30 * 60 * 1000l);
             response.addHeader("authorization", "Bearer "+newAccessToken);
+            CookieManager.addCookie(response, "accessToken", newAccessToken, ACCESS_EXP,true);
+            CookieManager.addCookie(response, "userRole", role.toLowerCase(), ACCESS_EXP,false);
         }else{
-            memberId = JwtUtils.getMemberId(token, secretKey);
-            role=Role.valueOf(JwtUtils.getRole(token,secretKey));
+            memberId = JwtUtils.getMemberId(accessToken, secretKey);
+            role=Role.valueOf(JwtUtils.getRole(accessToken,secretKey));
         }
 
         UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(memberId,
-                null, List.of(new SimpleGrantedAuthority(role.toString())));
+                null, Arrays.asList(new SimpleGrantedAuthority("ROLE_"+role.toString())));
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request,response);
-
     }
 
     public Boolean checkRefreshToken(String token, String secretKey){

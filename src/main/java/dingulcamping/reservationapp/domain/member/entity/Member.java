@@ -87,4 +87,7 @@ public class Member extends BaseTimeEntity {
         }
     }
 
+    public void addBooking(Booking booking){
+        this.bookings.add(booking);
+    }
 }

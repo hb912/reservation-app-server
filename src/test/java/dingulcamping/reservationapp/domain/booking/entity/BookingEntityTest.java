@@ -36,7 +36,7 @@ class BookingEntityTest {
     public void setProcessDate(){
         List<String> roomIcons=new ArrayList<>();
         roomIcons.add("hello");
-        Room room=new Room("room1",1000,"hello",roomIcons, RoomType.CARAVAN,"hello", 6,2,new MapPosition(2.5,3.6));
+        Room room=new Room("room1",1000,"hello",roomIcons, RoomType.Caravan,"hello", 6,2,new MapPosition(2.5,3.6));
         roomRepository.save(room);
         Optional<Member> findMember = memberRepository.findOneByNameAndEmail("memberA", "ab@ab.com");
         em.flush();

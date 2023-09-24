@@ -8,7 +8,8 @@ import dingulcamping.reservationapp.domain.member.entity.ResetPwKey;
 import dingulcamping.reservationapp.domain.member.exception.NameIsNotCorrectException;
 import dingulcamping.reservationapp.domain.member.service.MemberService;
 import dingulcamping.reservationapp.domain.member.service.ResetPwKeyService;
-import dingulcamping.reservationapp.global.security.JwtUtils;
+import dingulcamping.reservationapp.global.security.AuthUtils;
+import dingulcamping.reservationapp.global.security.CookieManager;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,12 +17,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+
+import static dingulcamping.reservationapp.global.security.CookieManager.ACCESS_EXP;
+import static dingulcamping.reservationapp.global.security.CookieManager.REFRESH_EXP;
 
 @RestController
 @Validated
@@ -33,6 +36,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MailService mailService;
     private final ResetPwKeyService resetPwKeyService;
+    private final AuthUtils authUtils;
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -50,25 +54,27 @@ public class MemberController {
         log.info("accessToken={}",tokens.getAccessToken());
         String accessToken="Bearer "+tokens.getAccessToken();
         response.addHeader("authorization", accessToken);
+        CookieManager.addCookie(response, "accessToken", tokens.getAccessToken(), ACCESS_EXP,true);
+        CookieManager.addCookie(response, "userRole", tokens.getRole().toLowerCase(), ACCESS_EXP,false);
         if(tokens.getRefreshToken()!=null) {
-            Cookie cookie = new Cookie("refreshToken", tokens.getRefreshToken());
-            response.addCookie(cookie);
+            CookieManager.addCookie(response, "refreshToken", tokens.getRefreshToken(), REFRESH_EXP,true);
         }
         return ResponseEntity.ok("로그인이 완료되었습니다.");
     }
 
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response){
-        Cookie cookie = new Cookie("refreshToken", "");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        CookieManager.addCookie(response, "refreshToken", "", 0,false);
+        CookieManager.addCookie(response, "accessToken", "", 0,false);
+        CookieManager.addCookie(response, "userRole", "", 0,false);
         response.addHeader("authorization","");
         return ResponseEntity.ok("로그아웃이 완료되었습니다.");
     }
 
+
     @GetMapping("/confirmPW")
     public ResponseEntity<Boolean> confirmPassword(@Valid String password, HttpServletRequest request){
-        Long memberId = getMemberId(request);
+        Long memberId = authUtils.getMemberId();
         Boolean isPasswordCorrect=memberService.verifyPassword(memberId, password);
         return ResponseEntity.ok(isPasswordCorrect);
     }
@@ -77,7 +83,7 @@ public class MemberController {
     public ResponseEntity<String> sendVerifyMail(@Valid @RequestBody FindPwReq findPwReq){
         Member findMember = memberService.getMemberByEmail(findPwReq.getEmail());
         if(!findMember.getName().equals(findPwReq.getName())){
-            throw new NameIsNotCorrectException("이름과 메일이 일치하지 않습니다.");
+            throw new NameIsNotCorrectException();
         }
         String redisKey = UUID.randomUUID().toString();
         ResetPwKey resetPwKey = new ResetPwKey(redisKey, findMember.getId());
@@ -105,22 +111,15 @@ public class MemberController {
     @PatchMapping("/user")
     public ResponseEntity<String> memberUpdate(@Valid @RequestBody MemberUpdateDto memberUpdateDto,
                                                HttpServletRequest request){
-        Long memberId=getMemberId(request);
+        Long memberId = authUtils.getMemberId();
         memberService.updateMember(memberId, memberUpdateDto);
         return ResponseEntity.ok("변경 성공");
     }
 
     @DeleteMapping("/user")
     public ResponseEntity<String> memberDelete(HttpServletRequest request){
-        Long memberId = getMemberId(request);
+        Long memberId = authUtils.getMemberId();
         memberService.deleteMember(memberId);
         return ResponseEntity.ok("탈퇴 성공");
-    }
-
-    private Long getMemberId(HttpServletRequest request) {
-        final String authorization= request.getHeader(HttpHeaders.AUTHORIZATION);
-        String token=authorization.split(" ")[1];
-        Long memberId= JwtUtils.getMemberId(token,secretKey);
-        return memberId;
     }
 }

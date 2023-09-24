@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.member.exception;
 
-public class RedisKeyExpiredException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class RedisKeyExpiredException extends CustomException {
     public RedisKeyExpiredException() {
-        super();
-    }
-
-    public RedisKeyExpiredException(String message) {
-        super(message);
-    }
-
-    public RedisKeyExpiredException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public RedisKeyExpiredException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.REDISKEY_EXPIRED);
     }
 }

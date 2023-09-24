@@ -1,5 +1,6 @@
 package dingulcamping.reservationapp.domain.booking.repository;
 
+import dingulcamping.reservationapp.domain.booking.dto.BookingInfoDto;
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
 import dingulcamping.reservationapp.domain.booking.entity.BookingStatus;
 import dingulcamping.reservationapp.domain.member.entity.Member;
@@ -72,7 +73,7 @@ class BookingRepositoryTest {
     public void findAllByMemberId(){
         Optional<Member> findMember = memberRepository.findOneByNameAndEmail("memberA", "ab@ab.com");
         PageRequest pageRequest=PageRequest.of(0,3);
-        Page<Booking> results = bookingRepository.findAllByMemberId(findMember.get().getId(), pageRequest);
+        Page<BookingInfoDto> results = bookingRepository.findAllByMemberId(findMember.get().getId(), pageRequest);
         assertThat(results.getContent().size()).isEqualTo(3);
     }
 

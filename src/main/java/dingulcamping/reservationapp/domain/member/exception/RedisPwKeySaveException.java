@@ -1,19 +1,10 @@
 package dingulcamping.reservationapp.domain.member.exception;
 
-public class RedisPwKeySaveException extends RuntimeException {
+import dingulcamping.reservationapp.global.exception.ErrorCode;
+import dingulcamping.reservationapp.global.exception.CustomException;
+
+public class RedisPwKeySaveException extends CustomException {
     public RedisPwKeySaveException() {
-        super();
-    }
-
-    public RedisPwKeySaveException(String message) {
-        super(message);
-    }
-
-    public RedisPwKeySaveException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public RedisPwKeySaveException(Throwable cause) {
-        super(cause);
+        super(ErrorCode.REDIS_PW_KEY_SAVE);
     }
 }
