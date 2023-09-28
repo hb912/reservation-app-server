@@ -66,5 +66,5 @@ public class AdminController {
         bookingService.changeStatus(bookingIdDto.getBookingID(), BookingStatus.BOOKING_CANCEL);
         return ResponseEntity.ok("취소완료");
     }
-    
+
 }

@@ -71,6 +71,12 @@ public class MemberController {
         return ResponseEntity.ok("로그아웃이 완료되었습니다.");
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<MemberInfoDto> getUserInfo(){
+        Long memberId = authUtils.getMemberId();
+        MemberInfoDto result=memberService.getMemberInfo(memberId);
+        return ResponseEntity.ok(result);
+    }
 
     @GetMapping("/confirmPW")
     public ResponseEntity<Boolean> confirmPassword(@Valid String password, HttpServletRequest request){

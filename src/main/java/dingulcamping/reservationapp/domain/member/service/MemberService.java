@@ -160,4 +160,8 @@ public class MemberService {
     public Page<MemberInfoDto> getAllByName(String name,Pageable pageable){
         return memberRepository.findAllByName(name,pageable);
     }
+
+    public MemberInfoDto getMemberInfo(Long memberId) {
+        return memberRepository.findMemberById(memberId).orElseThrow(MemberIsNotExistException::new);
+    }
 }

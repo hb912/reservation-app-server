@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 import static dingulcamping.reservationapp.domain.member.entity.QMember.member;
 
@@ -20,7 +21,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<MemberInfoDto> findAllByName(String name,Pageable pageable) {
+    public Page<MemberInfoDto> findAllByName(String name, Pageable pageable) {
         List<MemberInfoDto> content = queryFactory.select(
                         new QMemberInfoDto(
                                 member.id.as("_id"),
@@ -37,11 +38,24 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .from(member)
                 .where(nameEq(name));
 
-        return PageableExecutionUtils.getPage(content,pageable,()->countQuery.fetchOne());
+        return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.fetchOne());
+    }
+
+    @Override
+    public Optional<MemberInfoDto> findMemberById(Long id) {
+        return Optional.ofNullable(
+                queryFactory.select(new QMemberInfoDto(
+                                member.id.as("_id"),
+                                member.email,
+                                member.name,
+                                member.phoneNumber
+                        )).from(member)
+                        .where(member.id.eq(id))
+                        .fetchOne());
     }
 
     private BooleanExpression nameEq(String name) {
-        if(name.isBlank()){
+        if (name.isBlank()) {
             return null;
         }
         return member.name.eq(name);
