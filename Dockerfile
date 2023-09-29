@@ -1,4 +1,4 @@
-From openjdk:17-openjdk
+FROM openjdk:17-jdk-slim
 
 # VOLUME 설정
 VOLUME /tmp
