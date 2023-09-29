@@ -37,16 +37,16 @@ class roomRepositoryTest {
                         ".1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3270&q=80"
         );
 
-        Room caravan1=new Room("C-102호",10000,"화장실 : 1, 와이파이 : O, TV : 1, 부엌 : 1, 침대 : 2",
-                imgSrcs, CARAVAN,"https://i.imgur.com/M84ivhf.png", 6,2, new MapPosition(15.3,52.5));
+        Room caravan1=new Room("E-102호",10000,"화장실 : 1, 와이파이 : O, TV : 1, 부엌 : 1, 침대 : 2",
+                imgSrcs, Caravan,"https://i.imgur.com/M84ivhf.png", 6,2, new MapPosition(15.3,52.5));
 
         roomRepository.save(caravan1);
 
-        Optional<Room> findByName = roomRepository.findOneByName("C-102호");
+        Optional<Room> findByName = roomRepository.findOneByName("E-102호");
         List<Room> rooms = roomRepository.findAll();
         assertThat(findByName.isPresent()).isTrue();
         assertThat(findByName.get()).isEqualTo(caravan1);
-        assertThat(rooms.size()).isEqualTo(1);
+        assertThat(rooms.size()).isEqualTo(21);
     }
 
 }

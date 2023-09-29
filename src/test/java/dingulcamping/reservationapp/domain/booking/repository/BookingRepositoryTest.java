@@ -5,6 +5,7 @@ import dingulcamping.reservationapp.domain.booking.entity.Booking;
 import dingulcamping.reservationapp.domain.booking.entity.BookingStatus;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.member.repository.MemberRepository;
+import dingulcamping.reservationapp.domain.room.dto.SimpleRoomDto;
 import dingulcamping.reservationapp.domain.room.entity.MapPosition;
 import dingulcamping.reservationapp.domain.room.entity.Room;
 import dingulcamping.reservationapp.domain.room.entity.RoomType;
@@ -41,8 +42,8 @@ class BookingRepositoryTest {
     public void before(){
         List<String> roomIcons=new ArrayList<>();
         roomIcons.add("hello");
-        Room room1=new Room("room1",1000,"hello",roomIcons, RoomType.CARAVAN,"hello", 6,2,new MapPosition(2.5,3.6));
-        Room room2=new Room("room2",1000,"hello",roomIcons, RoomType.CARAVAN,"hello", 6,2,new MapPosition(2.5,3.6));
+        Room room1=new Room("room1",1000,"hello",roomIcons, RoomType.Caravan,"hello", 6,2,new MapPosition(2.5,3.6));
+        Room room2=new Room("room2",1000,"hello",roomIcons, RoomType.Caravan,"hello", 6,2,new MapPosition(2.5,3.6));
         roomRepository.save(room1);
         roomRepository.save(room2);
         Member memberA=new Member("ab@ab.com","memberA","12344456","010-5031-8478");
@@ -90,20 +91,23 @@ class BookingRepositoryTest {
                 getDate(2023,07,21),
                 getDate(2023,07,22)
         );
-        List<Room> results = bookingRepository.findDisableRoomsByDate(dates);
+        List<SimpleRoomDto> results = bookingRepository.findDisableRoomsByDate(dates);
         assertThat(results.size()).isEqualTo(2);
     }
 
     @Test
     public void findReq(){
-        List<Booking> results = bookingRepository.findRequests();
-        assertThat(results.size()).isEqualTo(1);
+        PageRequest pageRequest=PageRequest.of(0,3);
+        Page<BookingInfoDto> results = bookingRepository.findRequests(null, pageRequest);
+        assertThat(results.getContent().size()).isEqualTo(1);
     }
 
     @Test
     public void findConfirm(){
-        List<Booking> results = bookingRepository.findConfirms();
-        assertThat(results.size()).isEqualTo(3);
+        PageRequest pageRequest=PageRequest.of(0,3);
+        Date date = getDate(2023,7,22);
+        Page<BookingInfoDto> results = bookingRepository.findConfirms(null, date, pageRequest);
+        assertThat(results.getContent().size()).isEqualTo(2);
     }
 
     public Date getDate(int year,int month,int date){

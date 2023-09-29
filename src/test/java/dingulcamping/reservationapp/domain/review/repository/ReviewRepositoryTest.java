@@ -1,10 +1,12 @@
 package dingulcamping.reservationapp.domain.review.repository;
 
+import dingulcamping.reservationapp.domain.booking.dto.BookingInfoDto;
 import dingulcamping.reservationapp.domain.booking.entity.Booking;
 import dingulcamping.reservationapp.domain.booking.entity.BookingStatus;
 import dingulcamping.reservationapp.domain.booking.repository.BookingRepository;
 import dingulcamping.reservationapp.domain.member.entity.Member;
 import dingulcamping.reservationapp.domain.member.repository.MemberRepository;
+import dingulcamping.reservationapp.domain.review.dto.ReviewInfoDto;
 import dingulcamping.reservationapp.domain.review.entity.Review;
 import dingulcamping.reservationapp.domain.room.entity.MapPosition;
 import dingulcamping.reservationapp.domain.room.entity.Room;
@@ -53,8 +55,8 @@ class ReviewRepositoryTest {
         em.clear();
         List<String> roomIcons=new ArrayList<>();
         roomIcons.add("hello");
-        Room room1=new Room("room1",1000,"hello",roomIcons, RoomType.CARAVAN,"hello", 6,2,new MapPosition(2.5,3.6));
-        Room room2=new Room("room2",1000,"hello",roomIcons, RoomType.CARAVAN,"hello", 6,2,new MapPosition(2.5,3.6));
+        Room room1=new Room("room1",1000,"hello",roomIcons, RoomType.Caravan,"hello", 6,2,new MapPosition(2.5,3.6));
+        Room room2=new Room("room2",1000,"hello",roomIcons, RoomType.Caravan,"hello", 6,2,new MapPosition(2.5,3.6));
         roomRepository.save(room1);
         roomRepository.save(room2);
         Member memberA=new Member("ab@ab.com","memberA","12344456","010-5031-8478");
@@ -86,11 +88,16 @@ class ReviewRepositoryTest {
     public void createReview(){
         Optional<Member> findMember = memberRepository.findOneByNameAndEmail("memberA", "ab@ab.com");
         PageRequest pageRequest=PageRequest.of(0,3);
-        Page<Booking> results = bookingRepository.findAllByMemberId(findMember.get().getId(), pageRequest);
-        Booking booking = results.getContent().get(0);
+        Page<BookingInfoDto> results = bookingRepository.findAllByMemberId(findMember.get().getId(), pageRequest);
+        BookingInfoDto bookingInfo = results.getContent().get(0);
+        Optional<Booking> result = bookingRepository.findById(bookingInfo.get_id());
+        if(!result.isPresent()){
+            fail("Booking is not Exist");
+        }
+        Booking booking=result.get();
         Review review=new Review("hello","my name is",4.5,booking);
         reviewRepository.save(review);
-        Optional<Review> findReview = reviewRepository.findByBooking(booking);
+        Optional<Review> findReview = reviewRepository.findById(review.getId());
         assertThat(findReview).isPresent();
         assertThat(findReview.get()).isEqualTo(review);
     }
@@ -114,7 +121,7 @@ class ReviewRepositoryTest {
 
         //when
         PageRequest pageRequest=PageRequest.of(0,3);
-        Page<Review> findReviews = reviewRepository.findByRoomId(room1.get().getId(), pageRequest);
+        Page<ReviewInfoDto> findReviews = reviewRepository.findByRoom(room1.get(), pageRequest);
 
         //then
         assertThat(findReviews.getTotalElements()).isEqualTo(1);
