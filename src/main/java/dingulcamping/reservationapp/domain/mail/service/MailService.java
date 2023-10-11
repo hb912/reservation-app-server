@@ -27,6 +27,7 @@ public class MailService {
 
         MimeMessage mimeMessage=javaMailSender.createMimeMessage();
 
+        log.info("start send mail");
         try{
             Context context = new Context();
             context.setVariable("redisKey",redisKey);
